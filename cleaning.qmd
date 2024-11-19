@@ -1,0 +1,11 @@
+---
+title: "Sports Expenditures Cleaning"
+author: "Sophie McDowall"
+
+output: 
+    html:
+        embed-resource: true
+---
+
+# Loading in data from athletic expenditure csvs 
+
