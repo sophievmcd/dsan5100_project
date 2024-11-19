@@ -1,8 +1,0 @@
----
-title: "DSAN 5100 Project"
-author: "Sophie McDowall"
-
-output: 
-    html:
-        embed-resource: true
----
