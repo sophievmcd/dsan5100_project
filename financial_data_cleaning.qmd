@@ -1,0 +1,93 @@
+
+
+
+Cleaning up School Info Data
+```{r}
+library(dplyr)
+library(stringr)
+```
+
+```{r}
+schools <- read.csv("school_info.csv",header = TRUE)
+
+s_col_names <- c('unitid','school_name','year','int_name','address','city','state')
+colnames(schools) <- s_col_names
+schools$address <- paste(schools$address,schools$city,sep=", ")
+schools$address <- paste(schools$address,schools$state,sep=", ")
+schools <- schools |> select(c('unitid','school_name','address','state'))
+
+str(schools)
+```
+
+Create readable dictionary with new variables
+```{r}
+
+vars <- c("UNITID","F1A01","F1D01",'F1D02','F1B01','F1B02','F1B03','F1B04','F1B04A','F1B04B','F1B05',
+'F1B10','F1B11','F1B12','F1B13','F1B14','F1B15','F1B16','F1B21','F1B23','F1B24','F1B25','F1C021','F1C022','F1C101','F1E01','F1E02','F1E03','F1E04','F1E05','F1E06','F1E07','F1E08','F1E10','F1E11','F1E12','F1E121','F1E122','F1E13','F1E131','F1E132','F1E14','F1E141','F1E142','F1E15','F1E151','F1E152','F1E16','F1E161','F1H03A')
+
+v_file <- read.csv('dict_vars.csv', header = TRUE)
+d_file <- read.csv('dict_desc.csv', header = TRUE)
+dict <- merge(v_file,d_file,by = 'varname')
+dict <- dict |> select(c("varname","varTitle","longDescription")) |> subset(varname %in% vars) 
+str(dict)
+list <- dict |> select(c("varname","varTitle"))
+write.csv(dict,"sub_dict.csv", row.names = FALSE)
+write.csv(list,"sub_dict_list.csv", row.names = FALSE)
+
+```
+Create Function to read files
+```{r}
+
+load_fin_data <- function(f) {
+    file <- read.csv(f, header = TRUE)
+
+    file <- file |> select(-contains("X"))
+    cols <- colnames(file)
+    cols <- substring(cols,3)
+    colnames(file) <- cols
+    colnames(file)[1] <- 'unitid'
+
+    r_vars <- substring(vars,3)
+    r_vars[1] <- "unitid"
+
+    df <- file |> select(any_of(r_vars))
+    df <- merge(x = df, y = schools, by = "unitid", all.x=TRUE)
+    df <- df |> relocate(c(school_name,address,state), .after=unitid)
+
+    # initialize some variables
+    int <- ''
+    year <- substring(f,17,18)
+    new_f <- 'clean_fin_data/fin_FY'
+
+    if (grepl("_f1a",f)) {
+        int <- "_public.csv"
+        new_f <- paste(new_f,year,int,sep="")}
+    if (grepl("_f2",f)) {
+        int <- "_private_np.csv"
+        new_f <- paste(new_f,year,int,sep="")}
+    if (grepl("_f3",f)) {
+        int <- "_private_fp.csv"
+        new_f <- paste(new_f,year,int,sep="")}
+
+    print(dim(df))
+    print(new_f)
+
+    write.csv(df,new_f,row.names = FALSE)
+    print("done")
+}
+```
+
+
+
+Read files
+```{r}
+#find all tifs in your directory
+dir <-"raw_fin_data"
+#get a list of all files with ndvi in the name in your directory
+files<-list.files(path=dir, full.names = TRUE)
+#print(files)
+for (f in files){
+    print(f)
+    load_fin_data(f)
+}
+```
