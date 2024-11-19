@@ -11,4 +11,6 @@ To work with branches:
 6. navigate to main using "git checkout main"
 7. use "git merge <yourname>" to update the main branch with the changes from your branch
 
+8. if you are behind main, switch to your branch ("git checkout <yourname>") and then merge with main using "git merge main" and then "git push main" to update on website
+
 After these steps/using these commands, your branch should show 0 steps behind and 0 steps ahead of main. 
