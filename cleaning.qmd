@@ -8,29 +8,50 @@ output:
 ---
 
 # Loading in data from athletic expenditure csvs 
-
+### To Do:
 1. standardize school names
 2. clean/rename columns -- format of FISCAL YEAR (so 17-18 would be FY 2018 so the name would 2018_title)
+
+## Load in all data, check for na values for each year
 
 ```{r}
 
 data_info <- function(filename){
     df <- read.csv(filename)
-    cat("File:", filename, "\n" )
+    cat("FILE:", filename, "\n" )
     cat("Dimensions", dim(df), "\n" )
     
     na_col_count <- sapply(df, function(x) sum(is.na(x)))
     na_table <- data.frame(Column = names(na_col_count), NA_Count=na_col_count)
+    #print("NA Counts:")
+    #print(na_table) 
+    total_na <- sum(na_col_count)
+    cols_with_na <- names(na_col_count[na_col_count>0])
+    cat("Found", total_na, "NA values.\n")
+    if(length(cols_with_na)>0){
+        cat("Columns with NA values:", paste(cols_with_na, collapse = ", "), "\n")
+    }
+
+    return(df)
 
 }#END data
 
+df_1718 <- data_info("data/1718_sports_expenditures.csv")
+df_1819 <- data_info("data/1819_sports_expenditures.csv")
+df_1920 <- data_info("data/1920_sports_expenditures.csv")
+df_2021 <- data_info("data/2021_sports_expenditures.csv")
+df_2122 <- data_info("data/2122_sports_expenditures.csv")
 
 
-expend_1718 <- read.csv("data/1718_sports_expenditures.csv")
-expend_1819 <- read.csv("data/1819_sports_expenditures.csv")
-expend_1920 <- read.csv("data/1920_sports_expenditures.csv")
-expend_2021 <- read.csv("data/2021_sports_expenditures.csv")
-expend_2122 <- read.csv("data/2122_sports_expenditures.csv")
+```
+
+## Standardize School Names
+Use Name_Standardization file to replace school names for each file with school names matching other financial data files.  
+
+```{r}
+correct_names <- read.csv("Name_Standardizations.csv")
+dim(correct_names)
+
 
 
 ```
