@@ -9,3 +9,28 @@ output:
 
 # Loading in data from athletic expenditure csvs 
 
+1. standardize school names
+2. clean/rename columns -- format of FISCAL YEAR (so 17-18 would be FY 2018 so the name would 2018_title)
+
+```{r}
+
+data_info <- function(filename){
+    df <- read.csv(filename)
+    cat("File:", filename, "\n" )
+    cat("Dimensions", dim(df), "\n" )
+    
+    na_col_count <- sapply(df, function(x) sum(is.na(x)))
+    na_table <- data.frame(Column = names(na_col_count), NA_Count=na_col_count)
+
+}#END data
+
+
+
+expend_1718 <- read.csv("data/1718_sports_expenditures.csv")
+expend_1819 <- read.csv("data/1819_sports_expenditures.csv")
+expend_1920 <- read.csv("data/1920_sports_expenditures.csv")
+expend_2021 <- read.csv("data/2021_sports_expenditures.csv")
+expend_2122 <- read.csv("data/2122_sports_expenditures.csv")
+
+
+```
