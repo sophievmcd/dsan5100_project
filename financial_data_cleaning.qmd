@@ -28,7 +28,7 @@ Read in d1 schools list
 d1_schools <- read.csv('UNITID_school_names.csv',header = TRUE)
 
 # reduce to two columns to later merge with financial data
-d1_schools <- d1_schools |> select('d1_id','UNITID')
+d1_schools <- d1_schools |> select('d1_id','UNITID','school_name')
 str(d1_schools)
 ```
 
@@ -138,4 +138,45 @@ for (f in files){
     print(f)
     load_fin_data(f)
 }
+```
+
+Aggregate by variable rather than year
+
+```{r}
+# define the features we want to aggregate
+features <- c("total_assets","gifts","capital_grants_gifts","research_spent","discounts_to_tuiton")
+feature = "total_assets"
+
+#find all tifs in your directory
+dir2 <-"data/clean_fin_data"
+#get a list of all files with ndvi in the name in your directory
+files2 <- list.files(path=dir2, full.names = TRUE)
+
+for (feature in features){
+    #create dataframe to merge on (this will reset with each feature)
+    agg_df <- d1_schools
+
+    for (f in files2){
+        #read in the file
+        file <- read.csv(f, header = TRUE)
+        # select the two columns needed, the feature and the merge key
+        df <- file |> select(UNITID, feature)
+
+        # rename the feature column with the year
+        year <- str_sub(f,-17,-14)
+        new_col_name <- paste(year,"_",feature, sep="")
+        colnames(df)[2] <- new_col_name
+
+        # merge each year's feature on to the aggregated df
+        agg_df <- merge(agg_df, df, by = "UNITID") |> arrange(d1_id)
+    }
+    #str(agg_df)
+    output_file_name <- paste("data/clean_fin_data/2018-2022_",feature,".csv",sep="")
+    print(output_file_name)
+    #write to csv
+    write.csv(agg_df,output_file_name,row.names = FALSE)
+
+}
+
+
 ```
