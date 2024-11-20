@@ -1,0 +1,111 @@
+Cleaning up School Info Data
+```{r}
+library(dplyr)
+library(stringr)
+```
+
+Read in the school CSV and merge with the schools we have athetic spending data list.
+
+```{r}
+# read in the school info csv
+schools <- read.csv("dsan5100_project/data/school_info/school_info.csv",header = TRUE) 
+
+# rename the instiution name column
+s_col_names <- c('UNITID','school_name')
+colnames(schools) <- s_col_names
+
+# reduce to just two columns
+schools <- schools |> select(c('UNITID','school_name'))
+
+# read in the d1 schools csv
+d1_schools <- read.csv('dsan5100_project/Name_Standardizations.csv')
+
+# remove NA and trim any extra spaces
+d1_schools <- na.omit(d1_schools)
+d1_schools$financial.name <- updated_string <- str_trim(d1_schools$financial.name, "right")
+
+# merge with the schools data to just get the UNITIDs of the ones we want
+d1_schools <- merge(d1_schools,schools,by.x = 'financial.name',by.y= 'school_name', all.x = TRUE)
+
+# reorder the columns and arrange my my_id
+d1_schools <- d1_schools[,c("my_id","UNITID","financial.name",'school_name')] |> arrange(my_id)
+# rename the columns
+d1_col_names <- c('d1_id','UNITID','school_name','short_name')
+colnames(d1_schools) <- d1_col_names
+
+# remove Air Force since they dont work financial like the other institutions
+d1_schools <- d1_schools[d1_schools$short_name != 'Air Force', ]
+
+str(d1_schools)
+write.csv(d1_schools,'dsan5100_project/UNITID_school_names.csv',row.names = FALSE)
+```
+
+Get the population data for the schools
+```{r}
+# do it for first file in folder
+f = 'dsan5100_project/data/raw_pop_data/ef2017a.csv'
+file <- read.csv(f, header = TRUE)
+
+# extrac the two columns needed, one feature of interest and the merging key
+file <- file |> select('UNITID','EFTOTLT')
+
+# the data set has multiple observations for each school based on the type of student they are
+# need to aggregate 
+file_agg <- file |>  group_by(UNITID) |> 
+  summarise(EFTOTLT_total = sum(EFTOTLT, na.rm = TRUE))
+
+# rename the column with the year for the population
+year = str_sub(f, -9,-6)
+# data is for fall enrollment, but we are doing our data by graduation year/FY, so need to add one
+year = strtoi(year)
+year = year + 1
+new_col_name = paste(year,"_total_enroll",sep='')
+colnames(file_agg)[2] <- new_col_name
+
+# merge with d1_schools to get only the schools we sant since the csv is thousands of rows
+pop_df <- merge(d1_schools, file_agg, by="UNITID", all.x = TRUE) |> arrange(d1_id) |> select(-short_name)
+str(pop_df)
+```
+
+```{r}
+load_pop_data <- function(f, pop_df) {
+    # read in the file
+    file <- read.csv(f, header = TRUE)
+    # extract the two columns needed, one feature of interest and the merging key
+    file <- file |> select('UNITID','EFTOTLT')
+
+    # the data set has multiple observations for each school based on the type of student they are
+    # need to aggregate 
+    file_agg <- file |>  group_by(UNITID) |> 
+    summarise(EFTOTLT_total = sum(EFTOTLT, na.rm = TRUE))
+
+    # rename the column with the year for the population
+    year = str_sub(f, -9,-6)
+    # data is for fall enrollment, but we are doing our data by graduation year/FY, so need to add one
+    year = strtoi(year)
+    year = year + 1
+    new_col_name = paste(year,"_total_enroll",sep='')
+    colnames(file_agg)[2] <- new_col_name
+
+    # merge with d1_schools to get only the schools we sant since the csv is thousands of rows
+    pop_df <- merge(pop_df, file_agg, by="UNITID", all.x = TRUE) |> arrange(d1_id)
+    str(pop_df)
+    return(pop_df)
+}
+```
+
+```{r}
+pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2018a.csv', pop_df)
+pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2019a.csv', pop_df)
+pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2020a.csv', pop_df)
+pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2021a.csv', pop_df)
+pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2022a.csv', pop_df)
+
+str(pop_df)
+
+```
+
+
+```{r}
+write.csv(pop_df,'dsan5100_project/data/clean_pop_data/school_pops_2018-2023.csv', row.names = FALSE)
+```

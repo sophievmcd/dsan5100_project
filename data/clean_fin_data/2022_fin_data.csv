@@ -1,0 +1,106 @@
+"UNITID","d1_id","school_name","address","state","total_assets","gifts","capital_grants_gifts","research_spent","discounts_to_tuiton"
+200800,2,"University of Akron Main Campus","302 Buchtel Common, Akron, Ohio","Ohio",235755727,16903790,1076962,18034454,41486602
+100751,3,"The University of Alabama","739 University Blvd, Tuscaloosa, Alabama","Alabama",867733598,44942506,33892304,169667611,280492218
+197869,4,"Appalachian State University","287 Rivers St, Boone, North Carolina","North Carolina",223465276,21451466,3293430,7720177,33143373
+104179,5,"University of Arizona","1401 E University Blvd, Tucson, Arizona","Arizona",432206000,109238000,18720000,576795000,329727000
+104151,6,"Arizona State University Campus Immersion","University Drive and Mill Avenue, Tempe, Arizona","Arizona",813375000,76602000,63532000,457328000,586481000
+106397,7,"University of Arkansas","1125 W Maple St, Administration Bldg 425, Fayetteville, Arkansas","Arkansas",682511240,77906165,49426023,186954141,88934151
+106458,8,"Arkansas State University","2105 East, Aggie Road, Jonesboro, Arkansas","Arkansas",68872801,2493124,1410617,10861280,35757960
+100858,9,"Auburn University",", Auburn, Alabama","Alabama",307029186,52178255,12029012,263777680,150555527
+150136,10,"Ball State University","2000 W. University Ave, Muncie, Indiana","Indiana",163560131,7985790,5558626,13248016,77430773
+142115,11,"Boise State University","1910 University Dr, Boise, Idaho","Idaho",234363905,32882833,2215118,42088072,29712200
+201441,12,"Bowling Green State University-Main Campus","220 McFall Ctr, Bowling Green, Ohio","Ohio",296677086,0,2479232,15802088,64705549
+196088,13,"University at Buffalo","12 Capen Hall, Buffalo, New York","New York",787653630,30375874,9577949,169970857,101228083
+110635,14,"University of California-Berkeley","200 California Hall, Berkeley, California","California",NA,391721000,130262000,773319412,294646848
+169248,15,"Central Michigan University","106 Warriner Hall, Mount Pleasant, Michigan","Michigan",124659721,7736463,2941506,24854519,62231779
+199139,16,"University of North Carolina at Charlotte","9201 University City Blvd, Charlotte, North Carolina","North Carolina",497661963,12873225,21331870,28343731,57527972
+201885,17,"University of Cincinnati-Main Campus","2624 Clifton Avenue, Cincinnati, Ohio","Ohio",585277632,86986142,12504349,250316443,115586544
+217882,18,"Clemson University","201 Sikes Hall, Clemson, South Carolina","South Carolina",1100383017,95117860,4571968,245845525,124952449
+218724,19,"Coastal Carolina University","103 Tom Trout Drive, Conway, South Carolina","South Carolina",186109583,3251688,4970544,1510831,54299634
+126614,20,"University of Colorado Boulder","Regent Drive at Broadway, Boulder, Colorado","Colorado",1230746972,78723332,8117097,521977056,163153968
+126818,21,"Colorado State University-Fort Collins","102 Administration Building, Fort Collins, Colorado","Colorado",480137051,54497610,16071363,300177103,116474344
+129020,22,"University of Connecticut","352 Mansfield Road, Storrs, Connecticut","Connecticut",1299646535,37901054,1975804,214573714,278956167
+198464,23,"East Carolina University","East 5th Street, Greenville, North Carolina","North Carolina",437310173,18280895,36255989,44350750,48797792
+169798,24,"Eastern Michigan University","900 Oakwood St., Ypsilanti, Michigan","Michigan",75379950,12430588,1019873,6967333,61925196
+133669,25,"Florida Atlantic University","777 Glades Rd, Administration Bldg., Room 339, Boca Raton, Florida","Florida",483935052,0,1090463,76047244,91884993
+133951,26,"Florida International University","11200 S. W. 8 Street, Miami, Florida","Florida",654963321,27224659,30695848,189980956,196224665
+134130,27,"University of Florida","Tigert Hall, Gainesville, Florida","Florida",2266586000,206428000,12290000,862745000,245623000
+134097,28,"Florida State University","222 S. Copeland Street, Tallahassee, Florida","Florida",1072401502,72606344,49561330,229585739,136565929
+110556,29,"California State University-Fresno","5241 N Maple Ave, Fresno, California","California",143332265,6735620,2482285,3385818,111224789
+139959,30,"University of Georgia","Administration Building, Athens, Georgia","Georgia",646827751,87110021,107535332,514369516,175679587
+139931,31,"Georgia Southern University","1332 Southern Drive, Statesboro, Georgia","Georgia",133205605,10511716,61205333,38526959,51803421
+139940,32,"Georgia State University","33 Gilmer St, Atlanta, Georgia","Georgia",468352507,19085,9239187,222835613,86352959
+139755,33,"Georgia Institute of Technology-Main Campus","225 North Ave, Atlanta, Georgia","Georgia",771033642,1228480,16759632,1233341690,54744989
+225511,34,"University of Houston","4302 University Drive, Room 212, Houston, Texas","Texas",1272068304,105217390,0,217815043,163893323
+145637,35,"University of Illinois Urbana-Champaign","601 E John Street, Champaign, Illinois","Illinois",997932916,178016939,12028901,730807335,298281145
+151351,36,"Indiana University-Bloomington","107 South Indiana Ave., Bloomington, Indiana","Indiana",340465124,217256260,2312311,151498538,210751490
+153658,37,"University of Iowa","101 Jessup Hall, Iowa City, Iowa","Iowa",1371895000,118093000,6154000,519025000,110246000
+153603,38,"Iowa State University","1750 Beardshear Hall, Ames, Iowa","Iowa",281433456,59586185,29740853,208491758,153836724
+155317,39,"University of Kansas","Strong Hall, 1450 Jayhawk Blvd, Room 230, Lawrence, Kansas","Kansas",675310527,71323935,21139760,393417843,28767723
+155399,40,"Kansas State University","919 Mid-Campus Drive, Anderson Hall, Manhattan, Kansas","Kansas",360428958,0,29894624,204842671,44305080
+203517,41,"Kent State University at Kent","Executive Office, 2nd Floor Library, Kent, Ohio","Ohio",388505000,7403295,0,25307252,95567524
+157085,42,"University of Kentucky","South Limestone, Lexington, Kentucky","Kentucky",2046783066,62115115,64214830,396769453,177927306
+159647,43,"Louisiana Tech University","1310 West Railroad Avenue, Ruston, Louisiana","Louisiana",59510773,14636039,88430,21484449,35643075
+160658,44,"University of Louisiana at Lafayette","104 University Circle, Lafayette, Louisiana","Louisiana",73918605,6355728,7160025,85637521,32957988
+159993,45,"University of Louisiana at Monroe","700 University Avenue, Monroe, Louisiana","Louisiana",33929402,6356903,1143767,7870840,20009777
+157289,46,"University of Louisville","2301 S 3rd St, Louisville, Kentucky","Kentucky",436636000,49019000,9629000,185473000,95745000
+159391,47,"Louisiana State University and Agricultural & Mechanical College","156 Thomas Boyd Hall, Baton Rouge, Louisiana","Louisiana",585054578,54052674,11957176,278809219,123280406
+237525,48,"Marshall University","1 John Marshall Dr, Huntington, West Virginia","West Virginia",90150815,1126363,3345986,22737432,42538098
+163286,49,"University of Maryland-College Park",", College Park, Maryland","Maryland",1069400379,34568148,40654938,560680467,140611335
+166629,50,"University of Massachusetts-Amherst","374 Whitmore Building 181 Presidents Drive, Amherst, Massachusetts","Massachusetts",463034827,36013064,3215000,171713706,178509134
+220862,51,"University of Memphis","Alumni Avenue, Memphis, Tennessee","Tennessee",51514944,26714829,2993458,72131091,75635362
+204024,52,"Miami University-Oxford","501 East High St, Oxford, Ohio","Ohio",977010991,30835517,1788351,20279675,154983111
+170976,53,"University of Michigan-Ann Arbor","1109 Geddes Avenue, Ann Arbor, Michigan","Michigan",6386891000,217451000,44409000,1000480000,434616000
+171100,54,"Michigan State University",", East Lansing, Michigan","Michigan",1615441903,113374936,37853007,486293114,200972965
+220978,55,"Middle Tennessee State University","1301 East Main Street, Murfreesboro, Tennessee","Tennessee",93735810,2977322,4409353,11253586,63914333
+174066,56,"University of Minnesota-Twin Cities","100 Church Street SE, Minneapolis, Minnesota","Minnesota",1469130256,206083204,33767744,1017412570,296181009
+176080,57,"Mississippi State University","Lee Boulevard, Mississippi State, Mississippi","Mississippi",411990889,85469534,3701753,184359363,122052150
+178396,58,"University of Missouri-Columbia","105 Jesse Hall, Columbia, Missouri","Missouri",1615189598,40813020,17060818,282919590,181490936
+199193,59,"North Carolina State University at Raleigh","2101 Hillsborough Street, Raleigh, North Carolina","North Carolina",509523173,95629443,39359532,371650179,110822439
+181464,60,"University of Nebraska-Lincoln","1400 R Street, Lincoln, Nebraska","Nebraska",635978498,51394115,96965962,231455257,126865542
+182290,61,"University of Nevada-Reno","1664 North Virginia Street, Reno, Nevada","Nevada",320601731,23963737,3208550,121081550,59424489
+187985,62,"University of New Mexico-Main Campus","1700 Lomas Blvd NE, Albuquerque, New Mexico","New Mexico",1359183834,68260380,43210,282180298,89762873
+188030,63,"New Mexico State University-Main Campus","2850 Weddell Street, Las Cruces, New Mexico","New Mexico",164496600,10138633,6384399,109036639,40791066
+199120,64,"University of North Carolina at Chapel Hill","103 South Bldg Cb 9100, Chapel Hill, North Carolina","North Carolina",2299923801,193698936,40433302,735684195,143460201
+227216,65,"University of North Texas","1501 W.Chestnut Ave., Denton, Texas","Texas",525312358,20034375,372054,96963667,129705005
+147703,66,"Northern Illinois University","1425 W. Lincoln Hwy., Dekalb, Illinois","Illinois",100906719,0,269374,23567623,54652198
+204857,67,"Ohio University-Main Campus","020 Chubb Hall, Athens, Ohio","Ohio",530300642,0,9555659,47639923,75322019
+204796,68,"Ohio State University-Main Campus","15 E. 15th Avenue, Columbus, Ohio","Ohio",4377278339,226576684,44111513,630837265,258236595
+207500,69,"University of Oklahoma-Norman Campus","660 Parrington Oval, Norman, Oklahoma","Oklahoma",443942000,49197000,5790000,131910000,128152000
+207388,70,"Oklahoma State University-Main Campus","107 Whitehurst, Stillwater, Oklahoma","Oklahoma",320575597,30000188,18743992,143626743,128624195
+232982,71,"Old Dominion University","5115 Hampton Blvd, Norfolk, Virginia","Virginia",241112148,18335908,1181539,14821265,41695416
+176017,72,"University of Mississippi","Oxford, Mississippi, University, Mississippi","Mississippi",779676555,11182520,7513006,152314027,120277960
+209551,73,"University of Oregon","110 Johnson Hall, Eugene, Oregon","Oregon",346383188,103274246,117269708,104914675,104931520
+209542,74,"Oregon State University","1500 SW Jefferson Avenue, Corvallis, Oregon","Oregon",336925464,55772802,99003313,228222818,122485220
+214777,75,NA,NA,NA,NA,NA,NA,NA,NA
+243780,76,"Purdue University-Main Campus","Hovde Hall of Administration, West Lafayette, Indiana","Indiana",377894305,132109904,20173859,381932040,94118620
+186380,77,"Rutgers University-New Brunswick","83 Somerset St, New Brunswick, New Jersey","New Jersey",1335173000,41109000,16864000,625954000,176131000
+122409,78,"San Diego State University","5500 Campanile Dr, San Diego, California","California",454570501,18148963,19601794,7383383,125381409
+122755,79,"San Jose State University","One Washington Square, San Jose, California","California",252449384,5402691,1717777,886277,107232867
+102094,80,"University of South Alabama","307 N University Blvd, Mobile, Alabama","Alabama",362646000,30074000,18177000,37274000,36331000
+218663,81,"University of South Carolina-Columbia","Columbia-Campus, Columbia, South Carolina","South Carolina",1225035804,47468193,6747989,168406986,273667739
+137351,82,"University of South Florida","4202 East Fowler Ave, Tampa, Florida","Florida",950529073,28465481,32581218,377753739,145928163
+176372,83,"University of Southern Mississippi","118 College Drive # 0001, Hattiesburg, Mississippi","Mississippi",157015431,346661,9109665,53714012,48691721
+221759,84,"The University of Tennessee-Knoxville","527 Andy Holt Tower, Knoxville, Tennessee","Tennessee",331875400,24426353,43642040,281918203,187886541
+228778,85,"The University of Texas at Austin","110 Inner Campus Drive, Austin, Texas","Texas",1970855570,242816245,125964014,738864549,216053260
+228723,86,"Texas A & M University-College Station","1246 TAMU, College Station, Texas","Texas",1549222787,178584475,4440007,952927694,206344203
+228459,87,"Texas State University","601 University Dr, San Marcos, Texas","Texas",665188020,15394741,722287,108657936,132335265
+229115,88,"Texas Tech University","Broadway and University Avenue, Lubbock, Texas","Texas",363389308,49292141,103594092,224153180,124867556
+206084,89,"University of Toledo","2801 W Bancroft, Toledo, Ohio","Ohio",281763025,5406631,783072,53467360,78216838
+100663,90,"University of Alabama at Birmingham","Administration Bldg Suite 1070, Birmingham, Alabama","Alabama",2358340043,37066668,12806674,360236807,95706620
+132903,91,"University of Central Florida","4000 Central Florida Blvd, Orlando, Florida","Florida",700434492,18936680,1511936,201670115,250976316
+110662,92,"University of California-Los Angeles","405 Hilgard Ave, Los Angeles, California","California",NA,403663000,22093000,1204766644,232769685
+182281,93,"University of Nevada-Las Vegas","4505 S Maryland Pky, Las Vegas, Nevada","Nevada",523710000,23113000,5096000,47498000,101822000
+230764,94,"University of Utah","201 Presidents Circle, ROOM 201, Salt Lake City, Utah","Utah",2830671000,176426000,19304000,471955000,121685000
+230728,95,"Utah State University","Old Main Hill, Logan, Utah","Utah",334890631,42842791,34393958,267940100,94281507
+228796,96,"The University of Texas at El Paso","500 W. University Ave, El Paso, Texas","Texas",210083249,10639387,171833,120646174,57253448
+229027,97,"The University of Texas at San Antonio","One UTSA Circle, San Antonio, Texas","Texas",285264527,30903245,1809932,150630912,123963612
+234076,98,"University of Virginia-Main Campus","1827 University Avenue, Charlottesville, Virginia","Virginia",1141679587,210028185,110228702,553002979,167632688
+233921,99,"Virginia Polytechnic Institute and State University","210 Burruss Hall, 800 Drillfield Dr., Blacksburg, Virginia","Virginia",427403441,78702425,180755828,416639701,147361074
+236948,100,"University of Washington-Seattle Campus","1400 NE Campus Parkway, Seattle, Washington","Washington",2759637727,218011954,46877461,1009271362,189116395
+236939,101,"Washington State University","French Administration Building, Pullman, Washington","Washington",577225763,56032677,1559794,317926001,163123359
+238032,102,"West Virginia University","PO Box 6201, Morgantown, West Virginia","West Virginia",361110573,80581368,55471713,156938645,95333326
+157951,103,"Western Kentucky University","1906 College Heights Blvd, Bowling Green, Kentucky","Kentucky",132975992,0,0,7467535,79789425
+172699,104,"Western Michigan University","1903 W Michigan Ave, Kalamazoo, Michigan","Michigan",229652683,43851480,1785163,21821981,54311599
+240444,105,"University of Wisconsin-Madison","500 Lincoln Dr, Madison, Wisconsin","Wisconsin",1873708152,359662397,16966954,1231477252,165712714
+240727,106,"University of Wyoming","Corner of Ninth and Ivinson, Laramie, Wyoming","Wyoming",191676000,30086000,685000,112069000,44007000
