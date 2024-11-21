@@ -54,15 +54,24 @@ correct_names <- read.csv("Name_Standardizations.csv")
 dim(correct_names)
 
 update_names <- function(df, new_names=correct_names){
-    df$school_name <- ifelse(df$school_name %in% correct_names$school_name, correct_names$financial_name[match(df$school_name, correct_names$school_name)], df$school_name)
-    return(df)
+    merged <- merge(correct_names, df, by = "school_name", all.x=TRUE)
+    merged$school_name <- NULL
+    merged$my_id.y <- NULL
+    names(merged)[names(merged) == "financial.name"] <- "school_name"
+    return(merged)
 }
 
-update_names(df_1718)
-update_names(df_1819)
-update_names(df_1920)
-update_names(df_2021)
-update_names(df_2122)
+new_1718 <- update_names(df_1718)
+new_1819 <- update_names(df_1819)
+new_1920 <- update_names(df_1920)
+new_2021 <- update_names(df_2021)
+new_2122 <- update_names(df_2122)
 
+
+```
+
+```{r}
+unmatched <- setdiff(df_1819$school_name, correct_names$school_name)
+print(unmatched)
 
 ```
