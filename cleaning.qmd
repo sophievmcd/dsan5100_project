@@ -49,9 +49,20 @@ df_2122 <- data_info("data/2122_sports_expenditures.csv")
 Use Name_Standardization file to replace school names for each file with school names matching other financial data files.  
 
 ```{r}
+library(dplyr)
 correct_names <- read.csv("Name_Standardizations.csv")
 dim(correct_names)
 
+update_names <- function(df, new_names=correct_names){
+    df$school_name <- ifelse(df$school_name %in% correct_names$school_name, correct_names$financial_name[match(df$school_name, correct_names$school_name)], df$school_name)
+    return(df)
+}
+
+update_names(df_1718)
+update_names(df_1819)
+update_names(df_1920)
+update_names(df_2021)
+update_names(df_2122)
 
 
 ```
