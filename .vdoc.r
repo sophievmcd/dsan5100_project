@@ -1,20 +1,20 @@
----
-title: "Sports Expenditures Cleaning"
-author: "Sophie McDowall"
-
-output: 
-    html:
-        embed-resource: true
----
-
-# Loading in data from athletic expenditure csvs 
-### To Do:
-1. standardize school names
-2. clean/rename columns -- format of FISCAL YEAR (so 17-18 would be FY 2018 so the name would 2018_title)
-
-## Load in all data, check for na values for each year
-
-```{r}
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 
 data_info <- function(filename){
     df <- read.csv(filename)
@@ -43,12 +43,12 @@ df_2021 <- data_info("data/sports_expend_data/2021_sports_expenditures.csv")
 df_2122 <- data_info("data/sports_expend_data/2122_sports_expenditures.csv")
 
 
-```
-
-## Standardize School Names
-Use Name_Standardization file to replace school names for each file with school names matching other financial data files.  
-
-```{r}
+#
+#
+#
+#
+#
+#
 library(dplyr)
 correct_names <- read.csv("Name_Standardizations.csv")
 dim(correct_names)
@@ -68,4 +68,12 @@ new_2021 <- update_names(df_2021)
 new_2122 <- update_names(df_2122)
 
 
-```
+#
+#
+#
+unmatched <- setdiff(df_1819$school_name, correct_names$school_name)
+print(unmatched)
+
+#
+#
+#
