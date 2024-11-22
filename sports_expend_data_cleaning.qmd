@@ -1,0 +1,120 @@
+This Markdown file is intended to clean the sports expenditure data set
+
+Load in the libraries used for cleaning
+
+```{r}
+library(dplyr)
+library(stringr)
+library(tidyverse)
+```
+
+```{r}
+# read in the file
+d1_schools <- read.csv('UNITID_school_names.csv',header = TRUE)
+
+str(d1_schools)
+```
+
+```{r}
+
+sports_expenditures_2018 <- read_csv("./data/sports_expend_data/1718_sports_expenditures.csv",
+                                     show_col_types = FALSE)
+sports_expenditures_2019 <- read_csv('./data/sports_expend_data/1819_sports_expenditures.csv',
+                                     show_col_types = FALSE)
+sports_expenditures_2020 <- read_csv('./data/sports_expend_data/1920_sports_expenditures.csv',
+                                     show_col_types = FALSE)
+sports_expenditures_2021 <- read_csv('./data/sports_expend_data/2021_sports_expenditures.csv',
+                                     show_col_types = FALSE)
+sports_expenditures_2022 <- read_csv('./data/sports_expend_data/2122_sports_expenditures.csv',
+                                     show_col_types = FALSE)
+
+file_list <- c("sports_expenditures_2018",
+               "sports_expenditures_2019",
+               "sports_expenditures_2020",
+               "sports_expenditures_2021",
+               "sports_expenditures_2022")
+
+year_list <- c("2018", "2019", "2020", "2021", "2022")
+
+```
+
+```{r}
+
+str(sports_expenditures_2018)
+
+```
+
+```{r}
+
+update_column_names <- function(df) {
+  # Helper function to process a single column name
+  process_col_name <- function(col_name) {
+    if (grepl("^\\d{4}_", col_name)) { # Check if column name starts with 4 digits and underscore
+      # Extract the first four characters
+      year_part <- substr(col_name, 1, 4)
+      # Replace the first two digits with "20"
+      new_year <- paste0("20", substr(year_part, 3, 4))
+      # Remove the year part from the column name
+      rest_of_name <- sub("^\\d{4}_", "", col_name)
+      # Combine the modified column name
+      return(paste0(rest_of_name, "_", new_year))
+    } else {
+      # Return the column name unchanged if it doesn't match the pattern
+      return(col_name)
+    }
+  }
+
+  # Apply the helper function to all column names
+  new_colnames <- sapply(colnames(df), process_col_name)
+
+  # Update the column names of the data frame
+  colnames(df) <- new_colnames
+
+  return(df)
+}
+
+
+```
+
+```{r}
+
+# df2 is the sports expenditure df and the df1 is the united df id
+process_and_merge_fixed <- function(df1, df2) {
+  # Step 1: Rename "school_name" to "short_name" in df2
+  colnames(df2)[colnames(df2) == "school_name"] <- "short_name"
+
+  # Step 2: Merge the data frames on "short_name"
+  merged_df <- merge(df1, df2, by = "short_name")
+
+  # Step 3: Remove specific columns ("short_name", "d1_id", "my_id")
+  columns_to_remove <- c("short_name", "d1_id", "my_id")
+  merged_df <- merged_df %>% select(-all_of(columns_to_remove))
+
+  return(merged_df)
+}
+
+# colnames(sports_expenditures_2018)[colnames(sports_expenditures_2018) == "school_name"] <- "short_name"
+# merged_df <- merge(d1_schools, sports_expenditures_2018, by = "short_name")
+# columns_to_remove <- c("short_name", "d1_id", "my_id")
+# merged_df <- merged_df %>% select(-all_of(columns_to_remove))
+
+i <- 1
+for (file_name in file_list) {
+  # Dynamically retrieve the data frame by name
+  df <- get(file_name)  # Fetch the actual data frame object from its name as a string
+
+  # Process and merge the data frame
+  processed_df <- process_and_merge_fixed(d1_schools, df)
+
+  processed_df <- update_column_names(processed_df)
+
+  # Define the output file name based on the input file name
+  output_file_name <- paste0("./data/clean_sports_expend_data/",file_name, ".csv")
+
+  # Write the processed data frame to a CSV file
+  write.csv(processed_df, file = output_file_name, row.names = FALSE)
+
+  # Increment counter (optional but not needed here)
+  i <- i + 1
+}
+```
