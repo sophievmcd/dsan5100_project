@@ -1,0 +1,186 @@
+This code will take all the different cleaned data files and bring them together for easier EDA and future use.
+
+```{r}
+library(dplyr)
+library(stringr)
+library(tidyverse)
+```
+
+
+First we are going to do it all by year:
+
+Read in all in all the variables from their csvs
+```{r}
+# read in sports expendature data - our independent variables
+sports_df_18 <- read.csv('data/clean_sports_expend_data/sports_expenditures_2018.csv')
+sports_df_19 <- read.csv('data/clean_sports_expend_data/sports_expenditures_2019.csv')
+sports_df_20 <- read.csv('data/clean_sports_expend_data/sports_expenditures_2020.csv')
+sports_df_21 <- read.csv('data/clean_sports_expend_data/sports_expenditures_2021.csv')
+sports_df_22 <- read.csv('data/clean_sports_expend_data/sports_expenditures_2022.csv')
+
+# read in our dependent variables
+discounts_df <- read.csv('data/clean_fin_data/2018-2022_discounts_to_tuiton.csv')
+gifts_df <- read.csv('data/clean_fin_data/2018-2022_gifts.csv')
+research_df <- read.csv('data/clean_fin_data/2018-2022_research_spent.csv')
+grad_df <- read.csv('data/clean_pop_and_grad_data/graduation_rates_2018-2022.csv')
+
+# read in our population data for normalizing
+pop_df <- read.csv('data/clean_pop_and_grad_data/school_pops_2018-2023.csv')
+```
+
+Function to Remove dollar sign and make it a numeric
+```{r}
+remove_dollar<- function(x) {  
+   # Remove dollar signs and commas, and convert to numeric
+  if (is.character(x)) {
+    # Remove dollar sign and commas (optional)
+    x <- gsub("[\\$,]", "", x)  # Remove $ and comma (if any)
+    
+    # Convert the cleaned string to numeric
+    x <- as.numeric(x)
+  }
+  
+  # Return the processed column
+  return(x)
+}
+```
+
+
+Sum all the independent variables to also have a total column
+```{r}
+# turn each into a numeric and then add a summation column
+sports_df_18[, 3:27] <- lapply(sports_df_18[, 3:27], remove_dollar)
+sports_df_18$total_expendature <- rowSums(sports_df_18[ , 3:27], na.rm=TRUE)
+
+sports_df_19[, 3:27] <- lapply(sports_df_19[, 3:27], remove_dollar)
+sports_df_19$total_expendature <- rowSums(sports_df_19[ , 3:27], na.rm=TRUE)
+
+sports_df_20[, 3:27] <- lapply(sports_df_20[, 3:27], remove_dollar)
+sports_df_20$total_expendature <- rowSums(sports_df_20[ , 3:27], na.rm=TRUE)
+
+sports_df_21[, 3:27] <- lapply(sports_df_21[, 3:27], remove_dollar)
+sports_df_21$total_expendature <- rowSums(sports_df_21[ , 3:27], na.rm=TRUE)
+
+sports_df_22[, 3:27] <- lapply(sports_df_22[, 3:27], remove_dollar)
+sports_df_22$total_expendature <- rowSums(sports_df_22[ , 3:27], na.rm=TRUE)
+```
+
+Merge all dependent varaibles by year
+```{r}
+# initialize the variables
+dep_vars_2018 <- data.frame()
+dep_vars_2019 <- data.frame()
+dep_vars_2020 <- data.frame()
+dep_vars_2021 <- data.frame()
+dep_vars_2022 <- data.frame()
+
+# the yearly data starts at columns 4
+combine_columns <- function(df1, df2, df3, df4) {
+# Extract columns 1 to 3 (same in all dataframes)
+  col1 <- df1[[1]]
+
+  # Combine the 4th column from all four data frames into one data frame
+  df_col4 <- data.frame(col1, df1[[4]], df2[[4]], df3[[4]], df4[[4]])
+  colnames(df_col4) <- c("UNITID", "discounts_to_tuition", "gifts", "reseach_expendatures", "graduation_rate")
+  
+  # Combine the 5th column from all four data frames into one data frame
+  df_col5 <- data.frame(col1, df1[[5]], df2[[5]], df3[[5]], df4[[5]])
+  colnames(df_col5) <- c("UNITID", "discounts_to_tuition", "gifts", "reseach_expendatures", "graduation_rate")
+  
+  # Combine the 6th column from all four data frames into one data frame
+  df_col6 <- data.frame(col1, df1[[6]], df2[[6]], df3[[6]], df4[[6]])
+  colnames(df_col6) <- c("UNITID", "discounts_to_tuition", "gifts", "reseach_expendatures", "graduation_rate")
+  
+  # Combine the 7th column from all four data frames into one data frame
+  df_col7 <- data.frame(col1, df1[[7]], df2[[7]], df3[[7]], df4[[7]])
+  colnames(df_col7) <- c("UNITID", "discounts_to_tuition", "gifts", "reseach_expendatures", "graduation_rate")
+  
+  # Combine the 8th column from all four data frames into one data frame
+  df_col8 <- data.frame(col1, df1[[8]], df2[[8]], df3[[8]], df4[[8]])
+  colnames(df_col8) <- c("UNITID", "discounts_to_tuition", "gifts", "reseach_expendatures", "graduation_rate")
+  
+  # Return the five data frames as a list
+    return(list(df_col4 = df_col4, df_col5 = df_col5, df_col6 = df_col6, df_col7 = df_col7, df_col8 = df_col8))
+}
+
+
+# call the function with the dataframes
+result <- combine_columns(discounts_df, gifts_df, research_df, grad_df)
+
+# Accessing each column's data frame:
+dep_vars_2018 <- result$df_col4
+dep_vars_2019 <- result$df_col5
+dep_vars_2020 <- result$df_col6
+dep_vars_2021 <- result$df_col7
+dep_vars_2022 <- result$df_col8
+```
+
+Merge the datasets and save to files
+```{r}
+all_2018 <- merge(sports_df_18, dep_vars_2018, by = "UNITID")
+all_2019 <- merge(sports_df_19, dep_vars_2019, by = "UNITID")
+all_2020 <- merge(sports_df_20, dep_vars_2020, by = "UNITID")
+all_2021 <- merge(sports_df_21, dep_vars_2021, by = "UNITID")
+all_2022 <- merge(sports_df_22, dep_vars_2022, by = "UNITID")
+```
+
+Write all the dataframes to files
+```{r}
+write.csv(all_2018,'data/all_variables/by_year/2018_all_vars.csv', row.names = FALSE)
+write.csv(all_2019,'data/all_variables/by_year/2019_all_vars.csv', row.names = FALSE)
+write.csv(all_2020,'data/all_variables/by_year/2020_all_vars.csv', row.names = FALSE)
+write.csv(all_2021,'data/all_variables/by_year/2021_all_vars.csv', row.names = FALSE)
+write.csv(all_2022,'data/all_variables/by_year/2022_all_vars.csv', row.names = FALSE)
+```
+
+Now combine for an all years file
+```{r}
+#put all data frames into list
+df_list <- list(all_2018, all_2019, all_2020, all_2021, all_2022)
+
+#merge all data frames in list
+all_years <- df_list |> reduce(full_join, by='UNITID')
+
+# and write to a csv
+write.csv(all_years,'data/all_variables/all_years/2018-2022_all_vars.csv', row.names = FALSE)
+```
+
+Now to normalize all the numbers for the population(fall enrollment)
+```{r}
+norm_all_2018 <- all_2018
+norm_all_2018[, 4:32] <-  round((all_2018[, 4:32] / pop_df$X2018_total_enroll),4)
+
+norm_all_2019 <- all_2019
+norm_all_2019[, 4:32] <- round((all_2019[, 4:32] / pop_df$X2019_total_enroll),4)
+
+norm_all_2020 <- all_2020
+norm_all_2020[, 4:32] <- round((all_2020[, 4:32] / pop_df$X2020_total_enroll),4)
+
+norm_all_2021 <- all_2021
+norm_all_2021[, 4:32] <- round((all_2021[, 4:32] / pop_df$X2021_total_enroll),4)
+
+norm_all_2022 <- all_2022
+norm_all_2022[, 4:32] <- round((all_2022[, 4:32] / pop_df$X2022_total_enroll),4)
+```
+
+
+Write all the dataframes to files
+```{r}
+write.csv(norm_all_2018,'data/all_variables/by_year/2018_all_vars_norm.csv', row.names = FALSE)
+write.csv(norm_all_2019,'data/all_variables/by_year/2019_all_vars_norm.csv', row.names = FALSE)
+write.csv(norm_all_2020,'data/all_variables/by_year/2020_all_vars_norm.csv', row.names = FALSE)
+write.csv(norm_all_2021,'data/all_variables/by_year/2021_all_vars_norm.csv', row.names = FALSE)
+write.csv(norm_all_2022,'data/all_variables/by_year/2022_all_vars_norm.csv', row.names = FALSE)
+```
+
+Now combine for an all years file
+```{r}
+#put all data frames into list
+df_list_norm <- list(norm_all_2018, norm_all_2019, norm_all_2020, norm_all_2021, norm_all_2022)
+
+#merge all data frames in list
+all_years_norm <- df_list_norm |> reduce(full_join, by='UNITID')
+
+# and write to a csv
+write.csv(all_years_norm,'data/all_variables/all_years/2018-2022_all_vars_norm.csv', row.names = FALSE)
+```

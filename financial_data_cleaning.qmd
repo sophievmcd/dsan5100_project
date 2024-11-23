@@ -56,7 +56,7 @@ write.csv(dict,"data/data_dictionaries/fin_sub_dict.csv", row.names = FALSE)
 write.csv(list,"data/data_dictionaries/fin_sub_dict_list.csv", row.names = FALSE)
 ```
 
-Create Function to read files
+Create Function to read raw financial files
 ```{r}
 load_fin_data <- function(f) {
     # load the file
@@ -92,42 +92,7 @@ load_fin_data <- function(f) {
 ```
 
 
-```{r}
-f = "data/raw_fin_data/f1718_f1a.csv"
-
-file <- read.csv(f, header = TRUE)
-
-# remove all the columns that contain indicator variables
-file <- file |> select(-contains("X"))
-
-# select only the columns that are in the chosen variable list, vars
-df <- file |> select(all_of(vars))
-# merge with schools to get all the school info
-df <- merge(x = df, y = schools, by = "UNITID", all.x=TRUE)
-df <- df |> relocate(c(school_name,address,state), .after=UNITID)
-
-# rename the columns
-colnames(df) <- c("UNITID","school_name","address","state","total_assets","gifts","capital_grants_gifts","research_spent","discounts_to_tuiton")
-
-# merge with d1 schools list
-df_d1 <- merge(d1_schools, df, by="UNITID", all.x = TRUE) |> arrange(d1_id)
-
-# create the file name
-year <- str_sub(f,-10,-9)
-new_f <- 'data/clean_fin_data/20'
-end <- "_fin_data.csv"
-new_f <- paste(new_f,year,end,sep="")
-
-str(df_d1)
-
-#write to csv
-write.csv(df_d1,new_f,row.names = FALSE)
-print("done")
-
-
-```
-
-Read files
+Read raw financial files
 ```{r}
 #find all tifs in your directory
 dir <-"data/raw_fin_data"
@@ -140,12 +105,13 @@ for (f in files){
 }
 ```
 
-Aggregate by variable rather than year
+
+Read the cleaned finacial files and aggregate by variable rather than year
 
 ```{r}
 # define the features we want to aggregate
 features <- c("total_assets","gifts","capital_grants_gifts","research_spent","discounts_to_tuiton")
-feature = "total_assets"
+#feature = "total_assets"
 
 #find all tifs in your directory
 dir2 <-"data/clean_fin_data"
@@ -155,10 +121,12 @@ files2 <- list.files(path=dir2, full.names = TRUE)
 for (feature in features){
     #create dataframe to merge on (this will reset with each feature)
     agg_df <- d1_schools
+    #str(agg_df)
 
     for (f in files2){
         #read in the file
         file <- read.csv(f, header = TRUE)
+
         # select the two columns needed, the feature and the merge key
         df <- file |> select(UNITID, feature)
 
@@ -167,16 +135,16 @@ for (feature in features){
         new_col_name <- paste(year,"_",feature, sep="")
         colnames(df)[2] <- new_col_name
 
+        #str(df)
+
         # merge each year's feature on to the aggregated df
         agg_df <- merge(agg_df, df, by = "UNITID") |> arrange(d1_id)
     }
-    #str(agg_df)
+    str(agg_df)
     output_file_name <- paste("data/clean_fin_data/2018-2022_",feature,".csv",sep="")
     print(output_file_name)
     #write to csv
     write.csv(agg_df,output_file_name,row.names = FALSE)
 
 }
-
-
 ```

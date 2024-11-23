@@ -8,7 +8,7 @@ Read in the school CSV and merge with the schools we have athetic spending data 
 
 ```{r}
 # read in the school info csv
-schools <- read.csv("dsan5100_project/data/school_info/school_info.csv",header = TRUE) 
+schools <- read.csv("data/school_info/school_info.csv",header = TRUE) 
 
 # rename the instiution name column
 s_col_names <- c('UNITID','school_name')
@@ -18,7 +18,7 @@ colnames(schools) <- s_col_names
 schools <- schools |> select(c('UNITID','school_name'))
 
 # read in the d1 schools csv
-d1_schools <- read.csv('dsan5100_project/Name_Standardizations.csv')
+d1_schools <- read.csv('Name_Standardizations.csv')
 
 # remove NA and trim any extra spaces
 d1_schools <- na.omit(d1_schools)
@@ -37,35 +37,10 @@ colnames(d1_schools) <- d1_col_names
 d1_schools <- d1_schools[d1_schools$short_name != 'Air Force', ]
 
 str(d1_schools)
-write.csv(d1_schools,'dsan5100_project/UNITID_school_names.csv',row.names = FALSE)
+write.csv(d1_schools,'UNITID_school_names.csv',row.names = FALSE)
 ```
 
-Get the population data for the schools
-```{r}
-# do it for first file in folder
-f = 'dsan5100_project/data/raw_pop_data/ef2017a.csv'
-file <- read.csv(f, header = TRUE)
-
-# extrac the two columns needed, one feature of interest and the merging key
-file <- file |> select('UNITID','EFTOTLT')
-
-# the data set has multiple observations for each school based on the type of student they are
-# need to aggregate 
-file_agg <- file |>  group_by(UNITID) |> 
-  summarise(EFTOTLT_total = sum(EFTOTLT, na.rm = TRUE))
-
-# rename the column with the year for the population
-year = str_sub(f, -9,-6)
-# data is for fall enrollment, but we are doing our data by graduation year/FY, so need to add one
-year = strtoi(year)
-year = year + 1
-new_col_name = paste(year,"_total_enroll",sep='')
-colnames(file_agg)[2] <- new_col_name
-
-# merge with d1_schools to get only the schools we sant since the csv is thousands of rows
-pop_df <- merge(d1_schools, file_agg, by="UNITID", all.x = TRUE) |> arrange(d1_id) |> select(-short_name)
-str(pop_df)
-```
+Create a function that gets the population data for the schools
 
 ```{r}
 load_pop_data <- function(f, pop_df) {
@@ -94,18 +69,19 @@ load_pop_data <- function(f, pop_df) {
 }
 ```
 
+Run the function on the files
 ```{r}
-pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2018a.csv', pop_df)
-pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2019a.csv', pop_df)
-pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2020a.csv', pop_df)
-pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2021a.csv', pop_df)
-pop_df <- load_pop_data('dsan5100_project/data/raw_pop_data/ef2022a.csv', pop_df)
+pop_df <- load_pop_data('data/raw_pop_data/ef2018a.csv', pop_df)
+pop_df <- load_pop_data('data/raw_pop_data/ef2019a.csv', pop_df)
+pop_df <- load_pop_data('data/raw_pop_data/ef2020a.csv', pop_df)
+pop_df <- load_pop_data('data/raw_pop_data/ef2021a.csv', pop_df)
+pop_df <- load_pop_data('data/raw_pop_data/ef2022a.csv', pop_df)
 
 str(pop_df)
 
 ```
 
-
+Save the file
 ```{r}
-write.csv(pop_df,'dsan5100_project/data/clean_pop_data/school_pops_2018-2023.csv', row.names = FALSE)
+write.csv(pop_df,'data/clean_pop_and_grad_data/school_pops_2018-2023.csv', row.names = FALSE)
 ```
