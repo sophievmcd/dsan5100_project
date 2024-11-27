@@ -1,0 +1,150 @@
+---
+title: "Benefits to spending on ​post-secondary athletics beyond team performance"
+smaller: true
+author:
+  - name: "Morgan Driess"
+  - name: "Stacy Che"
+  - name: "CJ Jones"
+  - name: "Sophie McDowell"
+  - name: "Author Two"
+date: "November 26, 2024"
+location: "Washington, DC"
+bibliography: ../reference.bib
+csl: ieee.csl
+link-citations: true
+format:
+  revealjs:
+    embed-resources: true
+    slideNumber: true
+    slide-level: 2
+    center-title-slide: false
+    title-slide-attributes:
+      # data-background-image: ../images/Athletic_Spending_Presentation_0.png
+      data-background-color: "#e4e5e5"
+---
+
+# Agenda {data-background-color="#e4e5e5"}
+
+:::{.columns}
+
+::: {.column width="40%"}
+
+<img src="../images/Athletic_Spending_Presentation_1.png" width="100px" style="vertical-align: middle; margin-right: 20px;"> **Background**
+
+<img src="../images/Athletic_Spending_Presentation_2.png" width="100px" style="vertical-align: middle; margin-right: 20px;"> **Athletic Spending**
+
+<img src="../images/Athletic_Spending_Presentation_3.png" width="100px" style="vertical-align: middle; margin-right: 20px;"> **Benefits**
+
+<img src="../images/Athletic_Spending_Presentation_4.png" width="100px" style="vertical-align: middle; margin-right: 20px;"> **Findings**
+
+:::
+
+::: {.column width="60%"}
+![](../images/Athletic_Spending_Presentation_5.png){width=100%}
+:::
+
+:::
+
+# {data-background-color="#e4e5e5"}
+
+<!--- Background Slide Template -->
+
+:::{.columns}
+
+::: {.column width="100%"}
+
+<div style="display: flex; align-items: center; background: rgba(55, 82, 106, 0.5); border-radius: 100px; padding: 4px; margin-right: 10px; height: 80px;">
+  <img src="../images/Athletic_Spending_Presentation_1.png" style="width: 100px; vertical-align: middle; margin-bottom: 10px;">
+  <h3 style="margin: 0; text-align: center; color: #000;">Background</h3>
+</div>
+:::
+
+::: {.column width="30%"}
+
+<img src="../images/Athletic_Spending_Presentation_2.png" width="50px" style="vertical-align: middle; margin-right: 10px;"> **Athletic Spending**
+
+<img src="../images/Athletic_Spending_Presentation_3.png" width="50px" style="vertical-align: middle; margin-right: 10px;"> **Benefits**
+
+<img src="../images/Athletic_Spending_Presentation_4.png" width="50px" style="vertical-align: middle; margin-right: 10px;"> **Findings**
+:::
+
+::: {.column width="70%"}
+[@degroot2024probability, 2]
+:::
+
+:::
+
+# {data-background-color="#e4e5e5"}
+
+<!--- Athletic Spending Slide Template -->
+
+:::{.columns}
+
+::: {.column width="100%"}
+
+<div style="display: flex; align-items: center; background: rgba(55, 82, 106, 0.5); border-radius: 100px; padding: 4px; margin-right: 10px; height: 80px;">
+  <img src="../images/Athletic_Spending_Presentation_2.png" style="width: 100px; vertical-align: middle; margin-bottom: 10px;">
+  <h3 style="margin: 0; text-align: center; color: #000;">Athletic Spending</h3>
+</div>
+:::
+
+::: {.column width="30%"}
+
+<img src="../images/Athletic_Spending_Presentation_3.png" width="50px" style="vertical-align: middle; margin-right: 10px;"> **Benefits**
+
+<img src="../images/Athletic_Spending_Presentation_4.png" width="50px" style="vertical-align: middle; margin-right: 10px;"> **Findings**
+:::
+
+::: {.column width="70%"}
+[@degroot2024probability]
+:::
+
+:::
+
+# {data-background-color="#e4e5e5"}
+
+<!--- Benefits Spending Slide Template -->
+
+:::{.columns}
+
+::: {.column width="100%"}
+
+<div style="display: flex; align-items: center; background: rgba(55, 82, 106, 0.5); border-radius: 100px; padding: 4px; margin-right: 10px; height: 80px;">
+  <img src="../images/Athletic_Spending_Presentation_3.png" style="width: 100px; vertical-align: middle; margin-bottom: 10px;">
+  <h3 style="margin: 0; text-align: center; color: #000;">Benefits</h3>
+</div>
+:::
+
+::: {.column width="30%"}
+
+<img src="../images/Athletic_Spending_Presentation_4.png" width="50px" style="vertical-align: middle; margin-right: 10px;"> **Findings**
+:::
+
+::: {.column width="70%"}
+[@degroot2024probability]
+:::
+
+:::
+
+# {data-background-color="#e4e5e5"}
+
+<!--- Findings Spending Slide Template -->
+
+:::{.columns}
+
+::: {.column width="100%"}
+
+<div style="display: flex; align-items: center; background: rgba(55, 82, 106, 0.5); border-radius: 100px; padding: 4px; margin-right: 10px; height: 80px;">
+  <img src="../images/Athletic_Spending_Presentation_4.png" style="width: 100px; vertical-align: middle; margin-bottom: 10px;">
+  <h3 style="margin: 0; text-align: center; color: #000;">Findings</h3>
+</div>
+:::
+
+:::
+
+[@degroot2024probability]
+
+# References {data-background-color="#e4e5e5"}
+
+::: {#refs}
+:::

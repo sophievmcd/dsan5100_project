@@ -1,0 +1,26 @@
+---
+title: "DSAN 5100 Final Presentation - Group 7"
+authors: "Stacy Che, Morgan Driess, CJ Jones, Sophie McDowall, Kelsey Szafranski"
+toc: true
+toc-depth: 3
+bibliography: reference.bib
+---
+
+# Data Science Question
+
+<!-- <img src="./images/money_scales_1.png" alt="Dollar bills on a scale" width="100" height="75"> -->
+
+<p> How does athletic spending by Division 1 Colleges and Universities impact academic outcomes for that institution </p>
+
+### Key Ideas
+
+- Lorem ipsum odor amet, consectetuer adipiscing elit, replicating @degroot2024probability
+- Imperdiet felis aenean nostra class nibh at potenti
+- Vehicula bibendum vehicula pellentesque donec felis commodo vulputate
+- Malesuada cras cras ridiculus tortor tincidunt curae gravida neque
+
+[^1]: Lorem Ipsum text generated at [Lorem Ipsum Generator](https://loremipsum.io/generator)
+
+```
+
+```
