@@ -257,12 +257,12 @@ ggplot(means_df, aes(x = gifts, y = research_expenditure)) +
 
 
 ```{r}
-ggplot(means_df, aes(x = total_ops, y = graduation_rate)) +
+ggplot(means_df, aes(x = total_ops, y = discounts_to_tuition)) +
   geom_point(color = "darkred", alpha = 0.6, size = 3) +
   geom_smooth(method = "lm", color = "blue", se = FALSE) +
-  labs(title = "Relationship Between Total Ops and Graduation Rate",
+  labs(title = "Relationship Between Total Ops and Discounts to Tuition",
        x = "Total Ops (Athletic Spending)",
-       y = "Graduation Rate",
+       y = "Discounts to Tuition",
        caption = "Data: Means across 2018-2022 - Normalized") +
   theme_minimal(base_size = 12)
 ```
