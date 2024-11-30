@@ -22,17 +22,9 @@ merged_df <- read.csv("./all_years/all_yrs.csv")
 norm_df <- read.csv("./all_years/all_yrs_norm.csv")
 ```
 
-```{r}
+```{r, echo=FALSE, message=FALSE}
 sample_n(merged_df, 5)
-colnames(merged_df)
 ```
-
-
-```{r}
-colnames(merged_df)
-```
-
-You can add options to executable code like this
 
 ```{r}
 # Gather data into long format for easier plotting
@@ -41,7 +33,7 @@ long_data <- merged_df %>%
   pivot_longer(cols = starts_with("total_ops"), 
                names_to = "year", 
                values_to = "total_ops") %>%
-  mutate(year = gsub("total_ops_", "", year)) # Clean up year names
+  mutate(year = gsub("total_ops_", "", year)) 
 
 # Summarize total athletic spending by year
 summary_data <- long_data %>%
@@ -56,8 +48,10 @@ ggplot(data = summary_data, aes(x = year, y = mean_total_ops, fill = year)) +
        y = "Mean Total Athletic Spending",
        fill = "Year") +
   theme_minimal() +
-  scale_fill_brewer(palette = "Set3") # Optional aesthetic choice for colors
+  scale_fill_brewer(palette = "Set3") 
 ```
+
+Make a Means dataframe for means across 5 years of the variables
 ```{r}
 # Create a dataframe for calculating means for the specified columns
 means_df <- merged_df %>%
@@ -105,8 +99,6 @@ means_df <- merged_df %>%
 sample_n(means_df, 5)
 ```
 
-
-
 ```{r}
 # Select top 20 schools by total expenditure
 top_schools <- means_df %>%
@@ -131,7 +123,6 @@ ggplot(top_schools, aes(x = reorder(school_name.x, total_expenditure), y = total
 
 ```{r}
 # Plot for discounts_to_tuition
-# Plot for discounts_to_tuition
 plot_discounts <- ggplot(top_schools, aes(x = school_name.x, y = discounts_to_tuition)) +
   geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8) +
   coord_flip() +
@@ -141,7 +132,6 @@ plot_discounts <- ggplot(top_schools, aes(x = school_name.x, y = discounts_to_tu
        caption = "Data: Means across 2018-2022")
 plot_discounts
 ```
-
 
 
 ```{r}
@@ -155,6 +145,7 @@ plot_gifts <- ggplot(top_schools, aes(x = school_name.x, y = gifts)) +
        caption = "Data: Means across 2018-2022")
 plot_gifts
 ```
+
 ```{r}
 # Plot for research_expenditure
 plot_research <- ggplot(top_schools, aes(x = school_name.x, y = research_expenditure)) +
@@ -166,6 +157,7 @@ plot_research <- ggplot(top_schools, aes(x = school_name.x, y = research_expendi
        caption = "Data: Means across 2018-2022")
 plot_research
 ```
+
 ```{r}
 # Plot for graduation_rate
 plot_graduation <- ggplot(top_schools, aes(x = school_name.x, y = graduation_rate)) +
