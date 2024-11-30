@@ -1,0 +1,281 @@
+---
+title: "proj_eda Normalized Data"
+author: Group 7
+
+Output: html
+format:
+  html:
+    embed-resources: true
+    df-print: kable
+---
+
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse) |> suppressPackageStartupMessages()
+library(ggplot2) |> suppressPackageStartupMessages()
+library(dplyr) |> suppressPackageStartupMessages()
+library(reshape2) |> suppressPackageStartupMessages()
+```
+
+## Perform EDA (Exploratory Data Analysis) using some Data Visualizations.
+
+```{r}
+merged_df <- read.csv("./all_years/all_yrs.csv")
+norm_df <- read.csv("./all_years/all_yrs_norm.csv")
+```
+
+```{r, echo=FALSE, message=FALSE}
+sample_n(norm_df, 5)
+```
+
+```{r}
+# Gather data into long format for easier plotting
+long_data <- norm_df %>%
+  select(UNITID, total_ops_2018, total_ops_2019, total_ops_2020, total_ops_2021, total_ops_2022) %>%
+  pivot_longer(cols = starts_with("total_ops"), 
+               names_to = "year", 
+               values_to = "total_ops") %>%
+  mutate(year = gsub("total_ops_", "", year)) 
+
+# Summarize total athletic spending by year
+summary_data <- long_data %>%
+  group_by(year) %>%
+  summarize(mean_total_ops = mean(total_ops, na.rm = TRUE))
+
+# Create barplot
+ggplot(data = summary_data, aes(x = year, y = mean_total_ops, fill = year)) +
+  geom_bar(stat = "identity", alpha = 0.8, color = "black") +
+  labs(title = "Average Total Athletic Spending Across Years (2018–2022)",
+       x = "Year",
+       y = "Mean Total Athletic Spending",
+       fill = "Year") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set3") 
+```
+
+Make a Means dataframe for means across 5 years of the variables
+```{r}
+# Create a dataframe for calculating means for the specified columns
+means_df <- norm_df %>%
+  rowwise() %>%
+  mutate(
+    coach_comp_third = mean(c(coach_comp_third_2018, coach_comp_third_2019, coach_comp_third_2020, coach_comp_third_2021, coach_comp_third_2022), na.rm = TRUE),
+    support_comp_third = mean(c(support_comp_third_2018, support_comp_third_2019, support_comp_third_2020, support_comp_third_2021, support_comp_third_2022), na.rm = TRUE),
+    coach_comp = mean(c(coach_comp_2018, coach_comp_2019, coach_comp_2020, coach_comp_2021, coach_comp_2022), na.rm = TRUE),
+    guarantees = mean(c(guarantees_2018, guarantees_2019, guarantees_2020, guarantees_2021, guarantees_2022), na.rm = TRUE),
+    total_ops = mean(c(total_ops_2018, total_ops_2019, total_ops_2020, total_ops_2021, total_ops_2022), na.rm = TRUE),
+    aid = mean(c(aid_2018, aid_2019, aid_2020, aid_2021, aid_2022), na.rm = TRUE),
+    support_comp = mean(c(support_comp_2018, support_comp_2019, support_comp_2020, support_comp_2021, support_comp_2022), na.rm = TRUE),
+    severance = mean(c(severance_2018, severance_2019, severance_2020, severance_2021, severance_2022), na.rm = TRUE),
+    recruiting = mean(c(recruiting_2018, recruiting_2019, recruiting_2020, recruiting_2021, recruiting_2022), na.rm = TRUE),
+    team_travel = mean(c(teamtravel_2018, teamtravel_2019, teamtravel_2020, teamtravel_2021, teamtravel_2022), na.rm = TRUE),
+    equip = mean(c(equip_2018, equip_2019, equip_2020, equip_2021, equip_2022), na.rm = TRUE),
+    game_expenses = mean(c(game_expenses_2018, game_expenses_2019, game_expenses_2020, game_expenses_2021, game_expenses_2022), na.rm = TRUE),
+    marketing = mean(c(marketing_2018, marketing_2019, marketing_2020, marketing_2021, marketing_2022), na.rm = TRUE),
+    camps = mean(c(camps_2018, camps_2019, camps_2020, camps_2021, camps_2022), na.rm = TRUE),
+    spirits = mean(c(spirit_2018, spirit_2019, spirit_2020, spirit_2021, spirit_2022), na.rm = TRUE),
+    facilities = mean(c(facilities_rentals_2018, facilities_rentals_2019, facilities_rentals_2020, facilities_rentals_2021, facilities_rentals_2022), na.rm = TRUE),
+    overhead = mean(c(overhead_2018, overhead_2019, overhead_2020, overhead_2021, overhead_2022), na.rm = TRUE),
+    indirect_institutional = mean(c(indirect_institutional_2018, indirect_institutional_2019, indirect_institutional_2020, indirect_institutional_2021, indirect_institutional_2022), na.rm = TRUE),
+    medical = mean(c(medical_2018, medical_2019, medical_2020, medical_2021, medical_2022), na.rm = TRUE),
+    membership = mean(c(memberships_2018, memberships_2019, memberships_2020, memberships_2021, memberships_2022), na.rm = TRUE),
+    meals = mean(c(meals_2018, meals_2019, meals_2020, meals_2021, meals_2022), na.rm = TRUE),
+    otherops = mean(c(otherops_2018, otherops_2019, otherops_2020, otherops_2021, otherops_2022), na.rm = TRUE),
+    bowl_expenses = mean(c(bowl_expense_2018, bowl_expense_2019, bowl_expense_2020, bowl_expense_2021, bowl_expense_2022), na.rm = TRUE),
+    prof_def = mean(c(prof_def_2018, prof_def_2019, prof_def_2020, prof_def_2021, prof_def_2022), na.rm = TRUE),
+    bowl_coachcomp = mean(c(bowl_coachcomp_2018, bowl_coachcomp_2019, bowl_coachcomp_2020, bowl_coachcomp_2021, bowl_coachcomp_2022), na.rm = TRUE),
+    total_expenditure = mean(c(total_expendature.x, total_expendature.y, total_expendature.x.x, total_expendature.y.y), na.rm = TRUE),
+    discounts_to_tuition = mean(c(discounts_to_tuition.x, discounts_to_tuition.y, discounts_to_tuition.x.x, discounts_to_tuition.y.y), na.rm = TRUE),
+    gifts = mean(c(gifts.x, gifts.y, gifts.x.x, gifts.y.y), na.rm = TRUE),
+    research_expenditure = mean(c(reseach_expendatures.x, reseach_expendatures.y, reseach_expendatures.x.x, reseach_expendatures.y.y), na.rm = TRUE),
+    graduation_rate = mean(c(graduation_rate.x, graduation_rate.y, graduation_rate.x.x, graduation_rate.y.y), na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  select(UNITID, school_name.x, coach_comp_third, support_comp_third, coach_comp, guarantees, total_ops, aid, 
+         support_comp, severance, recruiting, team_travel, equip, game_expenses, marketing, camps, spirits, facilities,
+         overhead, indirect_institutional, medical, membership, meals, otherops, bowl_expenses, prof_def, bowl_coachcomp,
+         total_expenditure, discounts_to_tuition, gifts, research_expenditure, graduation_rate)
+```
+
+```{r}
+sample_n(means_df, 5)
+```
+
+```{r}
+# Select top 20 schools by total expenditure
+top_schools <- means_df %>%
+  arrange(desc(total_expenditure)) %>%
+  slice_head(n = 20)
+# Ensure the school names are ranked by total expenditure
+top_schools <- top_schools %>%
+  mutate(school_name.x = factor(school_name.x, levels = school_name.x[order(desc(total_expenditure))]))
+
+# Barplot for top 20 schools expenditures
+ggplot(top_schools, aes(x = reorder(school_name.x, total_expenditure), y = total_expenditure)) +
+  geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8) +
+  coord_flip() +  
+  labs(title = "Total Expenditure top 20 Schools",
+       x = "School Name",
+       y = "Total Expenditure",
+       caption = "Data: Means across 2018-2022") 
+
+```
+
+
+
+```{r}
+# Plot for discounts_to_tuition
+plot_discounts <- ggplot(top_schools, aes(x = school_name.x, y = discounts_to_tuition)) +
+  geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8) +
+  coord_flip() +
+  labs(title = "Discounts to Tuition for Top 20 Schools",
+       x = "School Name",
+       y = "Discounts to Tuition",
+       caption = "Data: Means across 2018-2022")
+plot_discounts
+```
+
+
+```{r}
+# Plot for gifts
+plot_gifts <- ggplot(top_schools, aes(x = school_name.x, y = gifts)) +
+  geom_bar(stat = "identity", fill = "orange", alpha = 0.8) +
+  coord_flip() +
+  labs(title = "Gifts for Top 20 Schools",
+       x = "School Name",
+       y = "Gifts",
+       caption = "Data: Means across 2018-2022")
+plot_gifts
+```
+
+```{r}
+# Plot for research_expenditure
+plot_research <- ggplot(top_schools, aes(x = school_name.x, y = research_expenditure)) +
+  geom_bar(stat = "identity", fill = "darkgreen", alpha = 0.8) +
+  coord_flip() +
+  labs(title = "Research Expenditure for Top 20 Schools",
+       x = "School Name",
+       y = "Research Expenditure",
+       caption = "Data: Means across 2018-2022")
+plot_research
+```
+
+```{r}
+# Plot for graduation_rate
+plot_graduation <- ggplot(top_schools, aes(x = school_name.x, y = graduation_rate)) +
+  geom_bar(stat = "identity", fill = "purple", alpha = 0.8) +
+  coord_flip() +
+  labs(title = "Graduation Rate for Top 20 Schools",
+       x = "School Name",
+       y = "Graduation Rate",
+       caption = "Data: Means across 2018-2022") 
+plot_graduation
+```
+
+```{r}
+# Scatterplot: Total Operations vs Graduation Rate
+ggplot(means_df, aes(x = total_ops, y = graduation_rate)) +
+  geom_point(color = "darkred", alpha = 0.6, size = 3) +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +  # Add a linear regression line
+  labs(title = "Athletic Spending vs Graduation Rate",
+       x = "Total Operations (Athletic Spending)",
+       y = "Graduation Rate",
+       caption = "Data: Means across 2018-2022") +
+  theme_minimal(base_size = 12)
+```
+
+```{r}
+# Select relevant numeric columns
+correlation_data <- means_df %>%
+  select(total_ops, gifts, research_expenditure, graduation_rate, discounts_to_tuition)
+
+# Compute correlation matrix
+correlation_matrix <- round(cor(correlation_data, use = "complete.obs"), 2)
+
+# Convert to long format for heatmap
+correlation_long <- melt(correlation_matrix)
+
+# Heatmap with enhanced readability
+ggplot(correlation_long, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = value), color = "black", size = 4) +  # Add correlation values
+  scale_fill_gradient2(low = "red", high = "blue", mid = "white", midpoint = 0,
+                       limits = c(-1, 1), name = "Correlation") +
+  labs(title = "Correlation Between Spending and Benefits",
+       x = "",
+       y = "",
+       fill = "Correlation") +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+        axis.text.y = element_text(size = 10))
+```
+
+## EDA Findings Summary
+
+- Strong Positive Correlation Between total_ops and gifts (0.67):
+
+Schools with higher athletic operational spending (total_ops) tend to receive more gifts or donations.The strong correlation between total_ops and gifts highlights athletics' role in attracting donations. Schools could leverage this by increasing visibility or engagement through athletics to boost fundraising efforts.
+
+- Moderate Positive Correlation Between total_ops and research_expenditure (0.65):
+
+Higher athletic spending is associated with greater research expenditures. This could indicate a general trend where schools that spend more on athletics also allocate more resources toward research, reflecting larger institutional budgets.
+
+- Moderate Positive Correlation Between total_ops and discounts_to_tuition (0.63):
+
+Schools with higher athletic operational spending also tend to provide more tuition discounts or scholarships.
+This might reflect institutions using athletics-generated revenues to support student financial aid or related benefits. The moderate correlation between total_ops and discounts_to_tuition suggests that athletics may indirectly contribute to student financial aid, either through revenue generation or donor funding.
+
+
+Low to Negative Correlation Between graduation_rate and Other Variables:
+
+- graduation_rate shows weak to negative correlations with total_ops (-0.17), gifts (-0.16), and research_expenditure (-0.1).
+This indicates that athletic spending and related benefits (like gifts or research funding) are not directly linked to better graduation rates. Graduation rates are likely influenced by other factors unrelated to athletics.
+
+
+Strong Positive Correlation Between gifts and research_expenditure (0.82):
+
+- Schools receiving more gifts also tend to spend more on research, suggesting a potential link between donor generosity and institutional research priorities. The positive relationships between total_ops, research_expenditure, and gifts suggest that schools investing heavily in athletics are likely to be larger institutions with robust overall budgets.
+
+
+Moderate Positive Correlation Between discounts_to_tuition and Other Variables:
+
+- discounts_to_tuition correlates moderately with gifts (0.54) and research_expenditure (0.57), suggesting that schools offering tuition discounts may also attract donor gifts or allocate more to research.
+
+
+```{r}
+# Since total_ops (athletics spending) has a strong positive correlation with gifts, a scatterplot with a regression line can show how athletics spending relates to donations.
+ggplot(means_df, aes(x = total_ops, y = gifts)) +
+  geom_point(color = "darkblue", alpha = 0.6, size = 3) +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(title = "Relationship Between Total Ops and Gifts",
+       x = "Total Ops (Athletic Spending)",
+       y = "Gifts (Donations)",
+       caption = "Data: Means across 2018-2022") +
+  theme_minimal(base_size = 12)
+```
+
+
+```{r}
+# The strong correlation between gifts and research_expenditure suggests a scatterplot might reveal patterns in donor contributions and research funding.
+ggplot(means_df, aes(x = gifts, y = research_expenditure)) +
+  geom_point(color = "darkgreen", alpha = 0.6, size = 3) +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = "Relationship Between Gifts and Research Expenditure",
+       x = "Gifts (Donations)",
+       y = "Research Expenditure",
+       caption = "Data: Means across 2018-2022") +
+  theme_minimal(base_size = 12)
+
+```
+
+
+```{r}
+ggplot(means_df, aes(x = total_ops, y = graduation_rate)) +
+  geom_point(color = "darkred", alpha = 0.6, size = 3) +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = "Relationship Between Total Ops and Graduation Rate",
+       x = "Total Ops (Athletic Spending)",
+       y = "Graduation Rate",
+       caption = "Data: Means across 2018-2022") +
+  theme_minimal(base_size = 12)
+```
+
