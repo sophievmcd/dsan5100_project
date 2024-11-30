@@ -47,6 +47,7 @@ ggplot(data = summary_data, aes(x = year, y = mean_total_ops, fill = year)) +
   labs(title = "Average Total Athletic Spending Across Years (2018–2022)",
        x = "Year",
        y = "Mean Total Athletic Spending",
+       caption = "Data: Normalized for Student Body Population",
        fill = "Year") +
   theme_minimal() +
   scale_fill_brewer(palette = "Set3") 
@@ -116,11 +117,9 @@ ggplot(top_schools, aes(x = reorder(school_name.x, total_expenditure), y = total
   labs(title = "Total Expenditure top 20 Schools",
        x = "School Name",
        y = "Total Expenditure",
-       caption = "Data: Means across 2018-2022") 
+       caption = "Data: Means across 2018-2022 - Normalized") 
 
 ```
-
-
 
 ```{r}
 # Plot for discounts_to_tuition
@@ -130,7 +129,7 @@ plot_discounts <- ggplot(top_schools, aes(x = school_name.x, y = discounts_to_tu
   labs(title = "Discounts to Tuition for Top 20 Schools",
        x = "School Name",
        y = "Discounts to Tuition",
-       caption = "Data: Means across 2018-2022")
+       caption = "Data: Means across 2018-2022 - Normalized")
 plot_discounts
 ```
 
@@ -143,7 +142,7 @@ plot_gifts <- ggplot(top_schools, aes(x = school_name.x, y = gifts)) +
   labs(title = "Gifts for Top 20 Schools",
        x = "School Name",
        y = "Gifts",
-       caption = "Data: Means across 2018-2022")
+       caption = "Data: Means across 2018-2022 - Normalized")
 plot_gifts
 ```
 
@@ -155,7 +154,7 @@ plot_research <- ggplot(top_schools, aes(x = school_name.x, y = research_expendi
   labs(title = "Research Expenditure for Top 20 Schools",
        x = "School Name",
        y = "Research Expenditure",
-       caption = "Data: Means across 2018-2022")
+       caption = "Data: Means across 2018-2022 - Normalized")
 plot_research
 ```
 
@@ -167,7 +166,7 @@ plot_graduation <- ggplot(top_schools, aes(x = school_name.x, y = graduation_rat
   labs(title = "Graduation Rate for Top 20 Schools",
        x = "School Name",
        y = "Graduation Rate",
-       caption = "Data: Means across 2018-2022") 
+       caption = "Data: Means across 2018-2022 - Normalized") 
 plot_graduation
 ```
 
@@ -179,7 +178,7 @@ ggplot(means_df, aes(x = total_ops, y = graduation_rate)) +
   labs(title = "Athletic Spending vs Graduation Rate",
        x = "Total Operations (Athletic Spending)",
        y = "Graduation Rate",
-       caption = "Data: Means across 2018-2022") +
+       caption = "Data: Means across 2018-2022 - Normalized") +
   theme_minimal(base_size = 12)
 ```
 
@@ -200,7 +199,7 @@ ggplot(correlation_long, aes(x = Var1, y = Var2, fill = value)) +
   geom_text(aes(label = value), color = "black", size = 4) +  # Add correlation values
   scale_fill_gradient2(low = "red", high = "blue", mid = "white", midpoint = 0,
                        limits = c(-1, 1), name = "Correlation") +
-  labs(title = "Correlation Between Spending and Benefits",
+  labs(title = "Correlation Between Total Sports Expendature Spending and Benefits",
        x = "",
        y = "",
        fill = "Correlation") +
@@ -211,34 +210,23 @@ ggplot(correlation_long, aes(x = Var1, y = Var2, fill = value)) +
 
 ## EDA Findings Summary
 
-- Strong Positive Correlation Between total_ops and gifts (0.67):
+- Strong Positive Correlation Between total_ops and gifts (0.76):
 
 Schools with higher athletic operational spending (total_ops) tend to receive more gifts or donations.The strong correlation between total_ops and gifts highlights athletics' role in attracting donations. Schools could leverage this by increasing visibility or engagement through athletics to boost fundraising efforts.
 
-- Moderate Positive Correlation Between total_ops and research_expenditure (0.65):
+- Moderate Positive Correlation Between total_ops and research_expenditure (0.78):
 
 Higher athletic spending is associated with greater research expenditures. This could indicate a general trend where schools that spend more on athletics also allocate more resources toward research, reflecting larger institutional budgets.
 
-- Moderate Positive Correlation Between total_ops and discounts_to_tuition (0.63):
+- Moderate Positive Correlation Between total_ops and discounts_to_tuition (0.78):
 
 Schools with higher athletic operational spending also tend to provide more tuition discounts or scholarships.
 This might reflect institutions using athletics-generated revenues to support student financial aid or related benefits. The moderate correlation between total_ops and discounts_to_tuition suggests that athletics may indirectly contribute to student financial aid, either through revenue generation or donor funding.
 
 
-Low to Negative Correlation Between graduation_rate and Other Variables:
+Low to Negative Correlation Between total_ops and graduation_rate (0.3):
 
-- graduation_rate shows weak to negative correlations with total_ops (-0.17), gifts (-0.16), and research_expenditure (-0.1).
-This indicates that athletic spending and related benefits (like gifts or research funding) are not directly linked to better graduation rates. Graduation rates are likely influenced by other factors unrelated to athletics.
-
-
-Strong Positive Correlation Between gifts and research_expenditure (0.82):
-
-- Schools receiving more gifts also tend to spend more on research, suggesting a potential link between donor generosity and institutional research priorities. The positive relationships between total_ops, research_expenditure, and gifts suggest that schools investing heavily in athletics are likely to be larger institutions with robust overall budgets.
-
-
-Moderate Positive Correlation Between discounts_to_tuition and Other Variables:
-
-- discounts_to_tuition correlates moderately with gifts (0.54) and research_expenditure (0.57), suggesting that schools offering tuition discounts may also attract donor gifts or allocate more to research.
+- This indicates that athletic spending are not directly linked to better graduation rates. Graduation rates are likely influenced by other factors unrelated to athletics.
 
 
 ```{r}
@@ -249,7 +237,7 @@ ggplot(means_df, aes(x = total_ops, y = gifts)) +
   labs(title = "Relationship Between Total Ops and Gifts",
        x = "Total Ops (Athletic Spending)",
        y = "Gifts (Donations)",
-       caption = "Data: Means across 2018-2022") +
+       caption = "Data: Means across 2018-2022 - Normalized") +
   theme_minimal(base_size = 12)
 ```
 
@@ -262,7 +250,7 @@ ggplot(means_df, aes(x = gifts, y = research_expenditure)) +
   labs(title = "Relationship Between Gifts and Research Expenditure",
        x = "Gifts (Donations)",
        y = "Research Expenditure",
-       caption = "Data: Means across 2018-2022") +
+       caption = "Data: Means across 2018-2022 - Normalized") +
   theme_minimal(base_size = 12)
 
 ```
@@ -275,7 +263,7 @@ ggplot(means_df, aes(x = total_ops, y = graduation_rate)) +
   labs(title = "Relationship Between Total Ops and Graduation Rate",
        x = "Total Ops (Athletic Spending)",
        y = "Graduation Rate",
-       caption = "Data: Means across 2018-2022") +
+       caption = "Data: Means across 2018-2022 - Normalized") +
   theme_minimal(base_size = 12)
 ```
 
