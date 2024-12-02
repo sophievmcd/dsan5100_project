@@ -21,7 +21,7 @@ library(knitr) |> suppressPackageStartupMessages()
 
 ```{r}
 merged_df <- read.csv("../eda/all_years/all_yrs.csv")
-norm_df <- read.csv("../eda/all_years/all_yrs.csv")
+norm_df <- read.csv("../eda/all_years/all_yrs_norm.csv")
 
 ```
 
