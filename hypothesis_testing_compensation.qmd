@@ -1,0 +1,267 @@
+File to perform hypothesis testing for coaching and support staff compensation
+
+1. T-Test: investigate whether institutions with higher athletic spending offer significantly higher support staff compensation compared to those with lower spending
+    
+Data Categorization: High Spending and Low Spending: 
+^ based on median athletic spending (total_ops_2018)
+
+Null (H0): The mean support staff compensation is the same or lower for high spending institutions compared to low spending institutions.
+
+Alternative Hypothesis (H1): The mean support staff compensation is significantly higher for high spending institutions.
+
+```{r}
+library(tidyverse)
+
+
+data <- read.csv("data/all_variables/all_years/2018-2022_all_vars_norm.csv")
+
+# Create spending tiers (high vs. low) based on median athletic spending
+median_spending <- median(data$total_ops_2018, na.rm = TRUE)
+data <- data %>%
+  mutate(spending_tier = ifelse(total_ops_2018 >= median_spending, "High", "Low"))
+
+# Perform Welch's T-Test
+t_test_result <- t.test(support_comp_2018 ~ spending_tier, data = data, 
+                        alternative = "greater", var.equal = FALSE)
+
+# Display the test results
+print(t_test_result)
+
+
+```
+
+Result: 
+
+Test Statistic (t): 8.3378
+
+The larger value of 8.3378 indicates a stronger deviation from the null hypothesis.
+
+p-value = 1.113e-11:
+
+Since p < 0.05, we conlude that institutions with high spending have significantly higher support staff compensation.
+
+95 percent confidence interval:
+ 54.24551      Inf
+
+Mean in group High  mean in group Low
+          93.18476           25.32612
+
+Difference in means: $67,858 shows that high-spending institutions allocate significantly more to support staff compensation.
+
+2. Chi-Square: Evaluate whether spending tiers (low, medium, high) are associated with support staff compensation levels (below or above $50k)
+
+Null (H0): Spending tiers(low,medium, high) are independent of whether support staff compensation exceeds a specific threshold ($50k)
+Alternative Hypothesis (H1): Spending tiers are associated with support staff compensation levels.
+
+Categorization:
+
+Spending Tiers: Divide institutions into low, medium, and high spending tiers based on quantiles of total_ops_2018.
+
+Compensation Levels: Categorize support staff compensation (support_comp_2018) as "Above" or "Below" a threshold ($50k)
+
+```{r}
+
+library(tidyverse)
+
+data <- read.csv("data/all_variables/all_years/2018-2022_all_vars_norm.csv")
+
+# Create spending tiers based on quantiles of total_ops_2018
+data <- data %>%
+  mutate(spending_category = cut(total_ops_2018,
+                                 breaks = quantile(total_ops_2018, probs = c(0, 0.33, 0.67, 1), na.rm = TRUE),
+                                 labels = c("Low", "Medium", "High")))
+
+# Categorize support staff compensation as Above or Below $50,000
+data <- data %>%
+  mutate(comp_above_50k = ifelse(support_comp_2018 > 50, "Above", "Below"))
+
+# Create a contingency table
+contingency_table <- table(data$spending_category, data$comp_above_50k)
+
+# Display the contingency table
+print(contingency_table)
+
+# Perform the Chi-Square Test
+chi_square_result <- chisq.test(contingency_table)
+
+# Display the results of the test
+print(chi_square_result)
+
+```
+Contingency Table
+
+Above Below
+  Low        0    33
+  Medium    12    24
+  High      34     0
+
+Observations: All 33 instituions fall into the below $50,000 category
+
+Test Statistic: X-squared = 70.631
+
+Provides that spending tiers (low, medium, high) are not independent of support staff compensation levels (above/below $50k)
+
+^ Quantifying a deviation from the null hypothesis, confirming that higher spending is strongly associated with higher compensation.
+
+p-value = 4.6e-16
+
+P-value is smaller than the standard significance threshold (0.05), providing strong evidence against the null.
+
+Conclusion: There is a statistically significant association between spending tiers and support staff compensation levels. (reject null)
+
+
+3. Confidence Intervals for Mean Coach Compensation:
+
+Purpose: Estimate the mean head coach compensation for high and low spending institutions with a 95% confidence interval (CI).
+
+Allows for comparison between high and low spending teirs to observe disparities in head coach compensation.
+
+Null(H0): The true mean head coach compensation for high-spending institutions is equal to that of low-spending institutions.
+
+Alternative Hypothesis(H1): The true mean head coach compensation for high spending institutions is significantly different from that of low-spending instituions.
+
+
+```{r}
+
+data <- read.csv("data/all_variables/all_years/2018-2022_all_vars_norm.csv")
+
+# Calculate the median of total_ops_2018
+median_spending <- median(data$total_ops_2018, na.rm = TRUE)
+
+# Subset data directly for high and low spending institutions
+high_spending_coach <- data$coach_comp_2018[data$total_ops_2018 >= median_spending]
+low_spending_coach <- data$coach_comp_2018[data$total_ops_2018 < median_spending]
+
+# Perform t-tests to calculate 95% confidence intervals
+ci_high <- t.test(high_spending_coach, conf.level = 0.95)$conf.int
+ci_low <- t.test(low_spending_coach, conf.level = 0.95)$conf.int
+
+# Display results
+cat("95% CI for High Spending Institutions:", ci_high, "\n")
+cat("95% CI for Low Spending Institutions:", ci_low, "\n")
+
+
+
+```
+
+Results:
+
+95% CI for High Spending Institutions: 83.89135, 114.3667
+
+The true mean head coach compensation for instituions in the high spending tier is expected to fall between approximately $83,891 and $114,367 with 95% confidence.
+
+95% CI for Low Spending Institutions: 27.10594, 34.26166
+
+The true mean head coach compensation for institutions in the low spending tier is expected to fall between approximately $27,106 and $34,262 with 95% confidence.
+
+4. Permutation Test for Coach Compensation Across Spending Tiers
+   
+Purpose: Test whether the observed difference in mean head coach compensation between high and low spending institutions is statistically significant using a non-parametric approach that does NOT rely on data distribution assumptions.
+
+Null(H0): The mean head coach compensation for high-spending institutions is equal to the mean head coach compensation for low-spending institutions. Any observed difference in means is due to random chance.
+
+Alternative(H1): The mean head coach compensation for high-spending institutions is significantly different from the mean head coach compensation for low-spending institutions. This difference is not due to random chance.
+
+```{r}
+set.seed(123)  # For reproducibility
+
+
+data <- read.csv("data/all_variables/all_years/2018-2022_all_vars_norm.csv")
+
+# Calculate the median spending to split into high and low groups
+median_spending <- median(data$total_ops_2018, na.rm = TRUE)
+
+# Subset the data based on spending levels
+high_spending_coach <- data$coach_comp_2018[data$total_ops_2018 >= median_spending]
+low_spending_coach <- data$coach_comp_2018[data$total_ops_2018 < median_spending]
+
+# Remove missing values if any
+high_spending_coach <- na.omit(high_spending_coach)
+low_spending_coach <- na.omit(low_spending_coach)
+
+# Calculate the observed difference in means
+obs_diff <- mean(high_spending_coach) - mean(low_spending_coach)
+
+# Combine all compensation values
+all_coach_comp <- c(high_spending_coach, low_spending_coach)
+n_high <- length(high_spending_coach)
+
+# Perform permutations
+perm_diffs <- replicate(10000, {
+  permuted <- sample(all_coach_comp)  # Shuffle the data
+  high_perm <- permuted[1:n_high]    # First n_high values as high group
+  low_perm <- permuted[(n_high + 1):length(permuted)]  # Remaining as low group
+  mean(high_perm) - mean(low_perm)  # Calculate mean difference
+})
+
+# Calculate the p-value
+p_value <- mean(perm_diffs >= obs_diff)
+
+# Display the results
+cat("Observed Difference:", obs_diff, "\n")
+cat("P-value from Permutation Test:", p_value, "\n")
+
+
+```
+
+Observed Difference: 68.44523
+
+Value represents diffference in mean head coach compensation between high-spending and low-spending instituions. 
+
+^ Institutions in the high spending teir pay $68,445 more to their head coaches compared to those in the low spending tier.
+
+P-value from Permutation Test: 0
+
+Null (H0): There is no significant difference in mean head coach compensation between high-spending and low-spending institutions.
+Alternative Hypothesis (H1): High-spending institutions have a significantly higher mean head coach compensation than low-spending institutions.
+
+5. T-Test
+
+Compares the mean compensation for support staff (support_comp_2018) and head coaches (coach_comp_2018). The t-test is appropriate because the two groups are distinct (support staff and coaches) and compensation data is independent.
+
+Purpose: to assess whether there is a statistically significant difference between the mean compensation of support staff and head coaches.
+
+Null Hypothesis (H0): The mean compensation for support staff is equal to the mean compensation for head coaches.
+Alternative Hypothesis (H1): The mean compensation for support staff is significantly different from the mean compensation for head coaches.
+
+```{r}
+
+library(tidyverse)
+
+data <- read.csv("data/all_variables/all_years/2018-2022_all_vars_norm.csv")
+
+# Remove missing values in compensation columns
+data <- data %>%
+  filter(!is.na(support_comp_2018) & !is.na(coach_comp_2018))
+
+# Perform the independent t-test
+t_test_result <- t.test(data$support_comp_2018, data$coach_comp_2018, 
+                        alternative = "two.sided",  # Two-tailed test
+                        var.equal = FALSE)          # Welch's t-test for unequal variances
+
+# Display the test result
+print(t_test_result)
+
+```
+
+Results:
+
+t = -0.77573
+
+A negative value indicates the mean compensation for support staff (x) is slightly lower than for head coaches (y), but the difference is not large enough to be significant.
+
+p-value = 0.4388
+
+Since p > 0.05, we say there is no statistically significant difference between the mean compensation for support staff and head coaches. (reject null)
+
+95% Confidence Interval: [-20.078796, 8.739285]
+
+The interval contains 0, further supporting the conclusion that there is no statistically significant difference.
+
+sample estimates:
+mean of x mean of y 
+ 58.77004  64.43980
+
+The average compensation for support staff is $58,770 and $64,440 for head coaches. 
+
+
