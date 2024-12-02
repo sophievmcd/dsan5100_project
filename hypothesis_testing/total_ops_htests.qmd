@@ -1,0 +1,17 @@
+```{r}
+merged_df <- read.csv("../eda/all_years/all_yrs.csv")
+norm_df <- read.csv("../eda/all_years/all_yrs_norm.csv")
+
+
+head(norm_df)
+
+```
+
+```{python}
+import os
+
+# Get the current working directory
+current_dir = os.getcwd()
+print("The current directory is:", current_dir)
+
+```

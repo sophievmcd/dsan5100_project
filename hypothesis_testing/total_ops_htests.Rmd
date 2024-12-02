@@ -1,0 +1,461 @@
+---
+title: "DSAN_5100_Lab12"
+author: "CJ Jones"
+date: "11/27/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse) |> suppressPackageStartupMessages()
+library(ggplot2) |> suppressPackageStartupMessages()
+library(dplyr) |> suppressPackageStartupMessages()
+library(reshape2) |> suppressPackageStartupMessages()
+library(car) |> suppressPackageStartupMessages()
+library(vegan) |> suppressPackageStartupMessages()
+library(knitr) |> suppressPackageStartupMessages()
+```
+
+```{r}
+merged_df <- read.csv("../eda/all_years/all_yrs.csv")
+norm_df <- read.csv("../eda/all_years/all_yrs.csv")
+
+```
+
+```{r}
+# Create a dataframe for calculating means for the specified columns
+means_df <- norm_df %>%
+  rowwise() %>%
+  mutate(
+    coach_comp_third = mean(c(coach_comp_third_2018, coach_comp_third_2019, coach_comp_third_2020, coach_comp_third_2021, coach_comp_third_2022), na.rm = TRUE),
+    support_comp_third = mean(c(support_comp_third_2018, support_comp_third_2019, support_comp_third_2020, support_comp_third_2021, support_comp_third_2022), na.rm = TRUE),
+    coach_comp = mean(c(coach_comp_2018, coach_comp_2019, coach_comp_2020, coach_comp_2021, coach_comp_2022), na.rm = TRUE),
+    guarantees = mean(c(guarantees_2018, guarantees_2019, guarantees_2020, guarantees_2021, guarantees_2022), na.rm = TRUE),
+    total_ops = mean(c(total_ops_2018, total_ops_2019, total_ops_2020, total_ops_2021, total_ops_2022), na.rm = TRUE),
+    aid = mean(c(aid_2018, aid_2019, aid_2020, aid_2021, aid_2022), na.rm = TRUE),
+    support_comp = mean(c(support_comp_2018, support_comp_2019, support_comp_2020, support_comp_2021, support_comp_2022), na.rm = TRUE),
+    severance = mean(c(severance_2018, severance_2019, severance_2020, severance_2021, severance_2022), na.rm = TRUE),
+    recruiting = mean(c(recruiting_2018, recruiting_2019, recruiting_2020, recruiting_2021, recruiting_2022), na.rm = TRUE),
+    team_travel = mean(c(teamtravel_2018, teamtravel_2019, teamtravel_2020, teamtravel_2021, teamtravel_2022), na.rm = TRUE),
+    equip = mean(c(equip_2018, equip_2019, equip_2020, equip_2021, equip_2022), na.rm = TRUE),
+    game_expenses = mean(c(game_expenses_2018, game_expenses_2019, game_expenses_2020, game_expenses_2021, game_expenses_2022), na.rm = TRUE),
+    marketing = mean(c(marketing_2018, marketing_2019, marketing_2020, marketing_2021, marketing_2022), na.rm = TRUE),
+    camps = mean(c(camps_2018, camps_2019, camps_2020, camps_2021, camps_2022), na.rm = TRUE),
+    spirits = mean(c(spirit_2018, spirit_2019, spirit_2020, spirit_2021, spirit_2022), na.rm = TRUE),
+    facilities = mean(c(facilities_rentals_2018, facilities_rentals_2019, facilities_rentals_2020, facilities_rentals_2021, facilities_rentals_2022), na.rm = TRUE),
+    overhead = mean(c(overhead_2018, overhead_2019, overhead_2020, overhead_2021, overhead_2022), na.rm = TRUE),
+    indirect_institutional = mean(c(indirect_institutional_2018, indirect_institutional_2019, indirect_institutional_2020, indirect_institutional_2021, indirect_institutional_2022), na.rm = TRUE),
+    medical = mean(c(medical_2018, medical_2019, medical_2020, medical_2021, medical_2022), na.rm = TRUE),
+    membership = mean(c(memberships_2018, memberships_2019, memberships_2020, memberships_2021, memberships_2022), na.rm = TRUE),
+    meals = mean(c(meals_2018, meals_2019, meals_2020, meals_2021, meals_2022), na.rm = TRUE),
+    otherops = mean(c(otherops_2018, otherops_2019, otherops_2020, otherops_2021, otherops_2022), na.rm = TRUE),
+    bowl_expenses = mean(c(bowl_expense_2018, bowl_expense_2019, bowl_expense_2020, bowl_expense_2021, bowl_expense_2022), na.rm = TRUE),
+    prof_def = mean(c(prof_def_2018, prof_def_2019, prof_def_2020, prof_def_2021, prof_def_2022), na.rm = TRUE),
+    bowl_coachcomp = mean(c(bowl_coachcomp_2018, bowl_coachcomp_2019, bowl_coachcomp_2020, bowl_coachcomp_2021, bowl_coachcomp_2022), na.rm = TRUE),
+    total_expenditure = mean(c(total_expendature.x, total_expendature.y, total_expendature.x.x, total_expendature.y.y), na.rm = TRUE),
+    discounts_to_tuition = mean(c(discounts_to_tuition.x, discounts_to_tuition.y, discounts_to_tuition.x.x, discounts_to_tuition.y.y), na.rm = TRUE),
+    gifts = mean(c(gifts.x, gifts.y, gifts.x.x, gifts.y.y), na.rm = TRUE),
+    research_expenditure = mean(c(reseach_expendatures.x, reseach_expendatures.y, reseach_expendatures.x.x, reseach_expendatures.y.y), na.rm = TRUE),
+    graduation_rate = mean(c(graduation_rate.x, graduation_rate.y, graduation_rate.x.x, graduation_rate.y.y), na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  select(UNITID, school_name.x, coach_comp_third, support_comp_third, coach_comp, guarantees, total_ops, aid, 
+         support_comp, severance, recruiting, team_travel, equip, game_expenses, marketing, camps, spirits, facilities,
+         overhead, indirect_institutional, medical, membership, meals, otherops, bowl_expenses, prof_def, bowl_coachcomp,
+         total_expenditure, discounts_to_tuition, gifts, research_expenditure, graduation_rate)
+```
+
+```{r}
+colnames(means_df)[colnames(means_df) == "school_name.x"] <- "school_name"
+sample_n(means_df, 5)
+```
+## barplot
+```{r}
+# Select relevant columns for analysis
+two_groups_df <- means_df %>%
+  select(total_ops, discounts_to_tuition, gifts, graduation_rate, research_expenditure)
+
+# Scale 'total_ops' into spending groups (Low, High)
+two_groups_df <- two_groups_df %>%
+  mutate(total_ops_group = cut(
+    total_ops,
+    breaks = quantile(total_ops, probs = seq(0, 1, 0.5), na.rm = TRUE),
+    labels = c("Low", "High"),
+    include.lowest = TRUE
+  ))
+
+two_groups_df <- two_groups_df %>% filter(!is.na(total_ops_group))
+
+
+# Select relevant columns for analysis
+three_groups_df <- means_df %>%
+  select(total_ops, discounts_to_tuition, gifts, graduation_rate, research_expenditure)
+
+# Scale 'total_ops' into spending groups (Low, Medium, High)
+three_groups_df <- three_groups_df %>%
+  mutate(total_ops_group = cut(
+    total_ops,
+    breaks = quantile(total_ops, probs = seq(0, 1, 0.33), na.rm = TRUE),
+    labels = c("Low", "Medium",  "High"),
+    include.lowest = TRUE
+  ))
+
+three_groups_df <- three_groups_df %>% filter(!is.na(total_ops_group))
+
+
+```
+
+```{r}
+dependent_vars <- c("discounts_to_tuition", "gifts", "graduation_rate", "research_expenditure")
+independent_var <- "total_ops_group"
+
+two_groups_subset <- two_groups_df[, c(dependent_vars, independent_var)]
+two_groups_subset <- na.omit(two_groups_subset)
+
+three_groups_subset <- three_groups_df[, c(dependent_vars, independent_var)]
+three_groups_subset <- na.omit(three_groups_subset)
+
+```
+
+
+```{r}
+
+run_multiple_t_tests <- function(data, dependent_vars, grouping_var, var_equal = TRUE) {
+  # Ensure the grouping variable is a factor
+  data[[grouping_var]] <- as.factor(data[[grouping_var]])
+  
+  # Initialize a results data frame
+  results <- data.frame(
+    Dependent_Variable = character(),
+    t_statistic = numeric(),
+    df = numeric(),
+    p_value = numeric(),
+    mean_group_1 = numeric(),
+    mean_group_2 = numeric(),
+    stringsAsFactors = FALSE
+  )
+  
+  for (dep_var in dependent_vars) {
+    # Check if the dependent variable exists
+    if (!dep_var %in% names(data)) {
+      warning(paste("Variable", dep_var, "not found in the dataset. Skipping."))
+      next
+    }
+    
+    # Perform t-test
+    t_test <- tryCatch({
+      t.test(data[[dep_var]] ~ data[[grouping_var]], data = data, var.equal = var_equal)
+    }, error = function(e) {
+      warning(paste("Error in t-test for", dep_var, ":", e$message))
+      return(NULL)
+    })
+    
+    # Skip if the t-test failed
+    if (is.null(t_test)) next
+    
+    # Extract results
+    group_levels <- levels(data[[grouping_var]])
+    group_means <- tapply(data[[dep_var]], data[[grouping_var]], mean, na.rm = TRUE)
+    results <- results %>% add_row(
+      Dependent_Variable = dep_var,
+      t_statistic = t_test$statistic,
+      df = t_test$parameter,
+      p_value = t_test$p.value,
+      mean_group_1 = group_means[group_levels[1]],
+      mean_group_2 = group_means[group_levels[2]]
+    )
+  }
+  
+  # Format results in a pretty table
+  results %>%
+    mutate(across(where(is.numeric), ~ round(., 4))) %>%
+    kable(format = "markdown", col.names = c(
+      "Dependent Variable", "t-Statistic", "Degrees of Freedom", "p-Value",
+      "Mean (Group 1)", "Mean (Group 2)"
+    ))
+}
+
+```
+
+
+```{r}
+
+investigate_assumptions <- function(data, dependent_vars, independent_var) {
+  # Ensure independent_var is a single column name
+  if (length(independent_var) > 1) {
+    stop("The independent_var argument must be a single column name.")
+  }
+  
+  results <- data.frame(
+    Dependent_Variable = character(),
+    Shapiro_W_Statistic = numeric(),
+    Shapiro_p_value = numeric(),
+    Levene_F_Statistic = numeric(),
+    Levene_p_value = numeric(),
+    stringsAsFactors = FALSE
+  )
+  
+  for (dep_var in dependent_vars) {
+    # Check if the dependent variable exists in the data
+    if (!dep_var %in% names(data)) {
+      warning(paste("Variable", dep_var, "not found in the dataset. Skipping."))
+      next
+    }
+    
+    # Ensure independent variable exists
+    if (!independent_var %in% names(data)) {
+      stop(paste("Independent variable", independent_var, "not found in the dataset."))
+    }
+    
+    # Shapiro-Wilk Test for Normality
+    shapiro_result <- shapiro.test(data[[dep_var]])
+    
+    # Levene's Test for Homogeneity of Variance
+    formula <- as.formula(paste(dep_var, "~", independent_var))
+    levene_result <- tryCatch({
+      leveneTest(formula, data = data)
+    }, error = function(e) {
+      warning(paste("Error in Levene's Test for", dep_var, ":", e$message))
+      return(NULL)
+    })
+    
+    # Add results to the dataframe
+    results <- results %>% add_row(
+      Dependent_Variable = dep_var,
+      Shapiro_W_Statistic = shapiro_result$statistic,
+      Shapiro_p_value = shapiro_result$p.value,
+      Levene_F_Statistic = if (!is.null(levene_result)) levene_result$`F value`[1] else NA,
+      Levene_p_value = if (!is.null(levene_result)) levene_result$`Pr(>F)`[1] else NA
+    )
+  }
+  
+  # Create a pretty table
+  results %>%
+    mutate(across(where(is.numeric), ~ round(., 4))) %>%
+    kable(format = "markdown", col.names = c(
+      "Dependent Variable", "Shapiro-W (Normality)", "Shapiro p-value",
+      "Levene F (Variance)", "Levene p-value"
+    ))
+}
+
+```
+
+```{r}
+
+investigate_assumptions(two_groups_df, dependent_vars, independent_var)
+investigate_assumptions(three_groups_df, dependent_vars, independent_var)
+```
+
+
+```{r}
+
+run_multiple_t_tests(two_groups_subset, dependent_vars, independent_var)
+
+```
+
+
+```{r}
+
+run_multiple_chi_squared_tests <- function(data, dependent_vars, grouping_var) {
+  # Ensure grouping variable is a factor
+  data[[grouping_var]] <- as.factor(data[[grouping_var]])
+  
+  # Initialize a results data frame
+  results <- data.frame(
+    Dependent_Variable = character(),
+    Chi_Squared = numeric(),
+    df = numeric(),
+    p_value = numeric(),
+    stringsAsFactors = FALSE
+  )
+  
+  for (dep_var in dependent_vars) {
+    # Check if the dependent variable exists
+    if (!dep_var %in% names(data)) {
+      warning(paste("Variable", dep_var, "not found in the dataset. Skipping."))
+      next
+    }
+    
+    # Categorize the dependent variable into Low, Medium, High
+    data[[paste0(dep_var, "_cat")]] <- cut(
+      data[[dep_var]],
+      breaks = quantile(data[[dep_var]], probs = seq(0, 1, 0.33), na.rm = TRUE),
+      labels = c("Low", "Medium", "High"),
+      include.lowest = TRUE
+    )
+    
+    # Create a contingency table
+    contingency_table <- table(data[[paste0(dep_var, "_cat")]], data[[grouping_var]])
+    
+    # Perform chi-squared test
+    chi_test <- tryCatch({
+      chisq.test(contingency_table)
+    }, error = function(e) {
+      warning(paste("Error in chi-squared test for", dep_var, ":", e$message))
+      return(NULL)
+    })
+    
+    # Skip if the chi-squared test failed
+    if (is.null(chi_test)) next
+    
+    # Append results
+    results <- results %>% add_row(
+      Dependent_Variable = dep_var,
+      Chi_Squared = chi_test$statistic,
+      df = chi_test$parameter,
+      p_value = chi_test$p.value
+    )
+  }
+  
+  # Format results in a pretty table
+  results %>%
+    mutate(across(where(is.numeric), ~ round(., 4))) %>%
+    kable(format = "markdown", col.names = c(
+      "Dependent Variable", "Chi-Squared Statistic", "Degrees of Freedom", "p-Value"
+    ))
+}
+
+```
+
+```{r}
+
+run_multiple_chi_squared_tests(two_groups_subset, dependent_vars, independent_var)
+run_multiple_chi_squared_tests(three_groups_subset, dependent_vars, independent_var)
+
+```
+
+
+```{r}
+
+distance_matrix <- dist(two_groups_subset[, dependent_vars], method = "euclidean")
+
+permanova_result <- adonis2(
+  distance_matrix ~ two_groups_subset[[independent_var]], 
+  data = two_groups_subset
+)
+
+print(permanova_result)
+```
+
+
+```{r}
+
+distance_matrix <- dist(three_groups_subset[, dependent_vars], method = "euclidean")
+
+permanova_result <- adonis2(
+  distance_matrix ~ three_groups_subset[[independent_var]], 
+  data = three_groups_subset
+)
+
+print(permanova_result)
+```
+
+
+```{r}
+
+pairwise_permanova <- function(data, dependent_vars, independent_var, permutations = 999) {
+  # Ensure the independent variable is a factor
+  data[[independent_var]] <- as.factor(data[[independent_var]])
+  
+  # Get unique groups
+  groups <- unique(data[[independent_var]])
+  
+  # Initialize results list
+  results <- data.frame(
+    Dependent_Variable = character(),
+    Comparison = character(),
+    Df = numeric(),
+    SumOfSqs = numeric(),
+    R2 = numeric(),
+    F = numeric(),
+    p_value = numeric(),
+    stringsAsFactors = FALSE
+  )
+  
+  for (dep_var in dependent_vars) {
+    # Check if the dependent variable exists
+    if (!dep_var %in% names(data)) {
+      warning(paste("Variable", dep_var, "not found in the dataset. Skipping."))
+      next
+    }
+    
+    # Compute distance matrix for the dependent variable
+    distance_matrix <- as.matrix(dist(data[[dep_var]], method = "euclidean"))
+    
+    # Perform pairwise comparisons
+    for (i in 1:(length(groups) - 1)) {
+      for (j in (i + 1):length(groups)) {
+        group1 <- groups[i]
+        group2 <- groups[j]
+        
+        # Subset data for the pair of groups
+        subset_indices <- data[[independent_var]] %in% c(group1, group2)
+        subset_dist <- distance_matrix[subset_indices, subset_indices]
+        subset_groups <- data[[independent_var]][subset_indices]
+        
+        # Skip if only one level is present
+        if (length(unique(subset_groups)) < 2) {
+          warning(paste("Skipping comparison due to insufficient levels:", group1, "vs", group2))
+          next
+        }
+        
+        # Perform PERMANOVA
+        adonis_result <- adonis2(as.dist(subset_dist) ~ subset_groups, permutations = permutations)
+        
+        # Append results
+        results <- results %>% add_row(
+          Dependent_Variable = dep_var,
+          Comparison = paste(group1, "vs", group2),
+          Df = adonis_result$Df[1],
+          SumOfSqs = adonis_result$SumOfSqs[1],
+          R2 = adonis_result$R2[1],
+          F = adonis_result$F[1],
+          p_value = adonis_result$`Pr(>F)`[1]
+        )
+      }
+    }
+  }
+  
+  # Create a pretty table
+  results %>%
+    mutate(across(where(is.numeric), ~ round(., 4))) %>%
+    kable(format = "markdown", col.names = c(
+      "Dependent Variable", "Comparison", "Df", "Sum of Squares", "R²", "F", "p-value"
+    ))
+}
+
+```
+
+```{r}
+
+pairwise_permanova(two_groups_subset, dependent_vars, independent_var, permutations = 4999)
+pairwise_permanova(three_groups_subset, dependent_vars, independent_var, permutations = 4999)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
