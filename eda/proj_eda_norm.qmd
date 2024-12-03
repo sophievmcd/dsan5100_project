@@ -41,15 +41,16 @@ summary_data <- long_data %>%
   group_by(year) %>%
   summarize(mean_total_ops = mean(total_ops, na.rm = TRUE))
 
-# Create barplot
+# Create barplot with revised units
 ggplot(data = summary_data, aes(x = year, y = mean_total_ops, fill = year)) +
   geom_bar(stat = "identity", alpha = 0.8, color = "black") +
-  labs(title = "Average Total Athletic Spending Across Years (2018–2022)",
+  labs(title = "Average Per-Student Athletic Spending Across Years (2018–2022)",
        x = "Year",
-       y = "Mean Total Athletic Spending",
+       y = "Mean Athletic Spending Per Student (USD)",
        fill = "Year") +
   theme_minimal() +
-  scale_fill_brewer(palette = "Set3") 
+  scale_fill_brewer(palette = "Set3")
+
 ```
 The plot shows the mean total athletic spending from 2018 to 2022, highlighting a decline in 2021, possibly due to disruptions like the COVID-19 pandemic. Spending increased again in 2022, surpassing previous years, indicating a recovery or increased investment in athletics.
 
@@ -101,159 +102,410 @@ means_df <- norm_df %>%
 colnames(means_df)[colnames(means_df) == "school_name.x"] <- "school_name"
 sample_n(means_df, 5)
 ```
-## barplot
+
 ```{r}
 # Select relevant columns for analysis
-df <- means_df %>%
+two_groups_df <- means_df %>%
+  select(total_ops, discounts_to_tuition, gifts, graduation_rate, research_expenditure)
+
+# Scale 'total_ops' into spending groups (Low, High)
+two_groups_df <- two_groups_df %>%
+  mutate(total_ops_group = cut(
+    total_ops,
+    breaks = quantile(total_ops, probs = seq(0, 1, 0.5), na.rm = TRUE),
+    labels = c("Low", "High"),
+    include.lowest = TRUE
+  ))
+
+two_groups_df <- two_groups_df %>% filter(!is.na(total_ops_group))
+
+
+# Select relevant columns for analysis
+three_groups_df <- means_df %>%
   select(total_ops, discounts_to_tuition, gifts, graduation_rate, research_expenditure)
 
 # Scale 'total_ops' into spending groups (Low, Medium, High)
-df <- df %>%
+three_groups_df <- three_groups_df %>%
   mutate(total_ops_group = cut(
     total_ops,
     breaks = quantile(total_ops, probs = seq(0, 1, 0.33), na.rm = TRUE),
+    labels = c("Low", "Medium",  "High"),
+    include.lowest = TRUE
+  ))
+
+three_groups_df <- three_groups_df %>% filter(!is.na(total_ops_group))
+```
+
+```{r}
+dependent_vars <- c("discounts_to_tuition", "gifts", "graduation_rate", "research_expenditure")
+independent_var <- "total_ops_group"
+
+two_groups_subset <- two_groups_df[, c(dependent_vars, independent_var)]
+two_groups_subset <- na.omit(two_groups_subset)
+
+three_groups_subset <- three_groups_df[, c(dependent_vars, independent_var)]
+three_groups_subset <- na.omit(three_groups_subset)
+```
+
+```{r}
+head(three_groups_df, 5)
+```
+```{r}
+# Calculate group means
+group_means <- three_groups_df %>%
+  group_by(total_ops_group) %>%
+  summarize(across(c(discounts_to_tuition, gifts, graduation_rate, research_expenditure), mean, na.rm = TRUE))
+
+# Barplot for means
+ggplot(group_means, aes(x = total_ops_group, y = discounts_to_tuition, fill = total_ops_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Discounts to Tuition by Athletic Spending Group", x = "Spending Group", y = "Mean Discounts to Tuition Per Student (USD)") +
+  theme_minimal()
+
+ggplot(group_means, aes(x = total_ops_group, y = gifts, fill = total_ops_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Gifts by Athletic Spending Group", x = "Spending Group", y = "Mean Gifts Per Student (USD)") +
+  theme_minimal()
+
+ggplot(group_means, aes(x = total_ops_group, y = research_expenditure, fill = total_ops_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Research Expenditure by Athletic Spending Group", x = "Spending Group", y = "Mean Research Expenditure Per Student USD") +
+  theme_minimal()
+
+ggplot(group_means, aes(x = total_ops_group, y = graduation_rate, fill = total_ops_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Graduation Rate by Athletic Spending Group", x = "Spending Group", y = "Mean Graduation Rate") +
+  theme_minimal()
+
+```
+```{r}
+# Select relevant columns for analysis
+three_groups_df_1 <- means_df %>%
+  select(coach_comp, discounts_to_tuition, gifts, graduation_rate, research_expenditure)
+
+# Scale 'coach_comp' into spending groups (Low, Medium, High)
+three_groups_df_1 <- three_groups_df_1 %>%
+  mutate(coach_comp_group = cut(
+    coach_comp,
+    breaks = quantile(coach_comp, probs = seq(0, 1, 0.33), na.rm = TRUE),
     labels = c("Low", "Medium", "High"),
     include.lowest = TRUE
   ))
 
+# Filter out rows with missing coach_comp_group
+three_groups_df_1 <- three_groups_df_1 %>% filter(!is.na(coach_comp_group))
 ```
 
 ```{r}
-# Create a bar plot to count schools in each spending group
-ggplot(df, aes(x = total_ops_group, fill = total_ops_group)) +
-  geom_bar() +
-  labs(
-    title = "Number of Schools in Each Spending Group",
-    x = "Spending Group (Low, Medium, High)",
-    y = "Count of Schools",
-    fill = "Spending Group"
-  ) +
+# Calculate group means
+group_means_1 <- three_groups_df_1 %>%
+  group_by(coach_comp_group) %>%
+  summarize(across(c(discounts_to_tuition, gifts, graduation_rate, research_expenditure), mean, na.rm = TRUE))
+```
+
+```{r}
+# Barplot for means
+ggplot(group_means_1, aes(x = coach_comp_group, y = discounts_to_tuition, fill = coach_comp_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Discounts to Tuition by Coach Compensation Group", x = "Coach Compensation Group", y = "Mean Discounts to Tuition Per Student (USD)") +
+  theme_minimal()
+
+# Barplot for means
+ggplot(group_means_1, aes(x = coach_comp_group, y = gifts, fill = coach_comp_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Gifts by Coach Compensation Group", x = "Coach Compensation Group", y = "Mean Gifts Per Student (USD)") +
+  theme_minimal()
+
+# Barplot for means
+ggplot(group_means_1, aes(x = coach_comp_group, y = research_expenditure, fill = coach_comp_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Research Expenditure by Coach Compensation Group", x = "Coach Compensation Group", y = "Mean Research Expenditure Per Student (USD)") +
+  theme_minimal()
+
+# Barplot for means
+ggplot(group_means_1, aes(x = coach_comp_group, y = graduation_rate, fill = coach_comp_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Graduation Numbers by Coach Compensation Group", x = "Coach Compensation Group", y = "Mean Graduation Numbers") +
+  theme_minimal()
+
+```
+
+
+
+```{r}
+# Select relevant columns for analysis
+three_groups_df_2 <- means_df %>%
+  select(support_comp, discounts_to_tuition, gifts, graduation_rate, research_expenditure)
+
+# Scale 'support_comp' into spending groups (Low, Medium, High)
+three_groups_df_2 <- three_groups_df_2 %>%
+  mutate(support_comp_group = cut(
+    support_comp,
+    breaks = quantile(support_comp, probs = seq(0, 1, 0.33), na.rm = TRUE),
+    labels = c("Low", "Medium", "High"),
+    include.lowest = TRUE
+  ))
+
+# Filter out rows with missing coach_comp_group
+three_groups_df_2 <- three_groups_df_2 %>% filter(!is.na(support_comp_group))
+```
+
+```{r}
+head(three_groups_df_2)
+```
+
+```{r}
+# Calculate group means
+group_means_2 <- three_groups_df_2 %>%
+  group_by(support_comp_group) %>%
+  summarize(across(c(discounts_to_tuition, gifts, graduation_rate, research_expenditure), mean, na.rm = TRUE))
+```
+
+```{r}
+# Barplot for means
+ggplot(group_means_2, aes(x = support_comp_group, y = discounts_to_tuition, fill = support_comp_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Discounts to Tuition by Support Compensation Group", x = "Support Compensation Group", y = "Mean Discounts to Tuition Per Student (USD)") +
+  theme_minimal()
+
+# Barplot for means
+ggplot(group_means_2, aes(x = support_comp_group, y = gifts, fill = support_comp_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Gifts by Support Compensation Group", x = "Support Compensation Group", y = "Mean Gifts Per Student (USD)") +
+  theme_minimal()
+
+# Barplot for means
+ggplot(group_means_2, aes(x = support_comp_group, y = research_expenditure, fill = support_comp_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Research Expenditure by Support Compensationn Group", x = "Support Compensation Group", y = "Mean Research Expenditure Per Student (USD)") +
+  theme_minimal()
+
+# Barplot for means
+ggplot(group_means_2, aes(x = support_comp_group, y = graduation_rate, fill = support_comp_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Graduation Numbers by Support Compensation Group", x = "Support Compensation Group", y = "Mean Graduation Numbers") +
+  theme_minimal()
+
+```
+
+
+```{r}
+# Compute correlations
+correlation_matrix <- three_groups_df %>%
+  select(discounts_to_tuition, gifts, graduation_rate, research_expenditure) %>%
+  cor(use = "complete.obs")
+
+# Heatmap
+melted_corr <- melt(correlation_matrix)
+ggplot(melted_corr, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0, limit = c(-1, 1), space = "Lab") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  labs(title = "Correlation Heatmap", x = "", y = "")
 
 ```
+Variables with strong correlations (e.g., discounts_to_tuition and gifts) might be influencing each other and could provide insights when analyzed further.
+Weaker correlations (e.g., involving graduation_rate) suggest these variables may be independent or have limited direct relationships with others.
+
 ```{r}
-# Summarize data for plotting (Exclude NA in total_ops_group)
-summary_df <- df %>%
-  filter(!is.na(total_ops_group)) %>% # Exclude rows with NA in total_ops_group
+# Violin plot 
+ggplot(three_groups_df, aes(x = total_ops_group, y = discounts_to_tuition, fill = total_ops_group)) +
+  geom_violin(trim = FALSE) +
+  geom_boxplot(width = 0.2, fill = "white") +
+  labs(title = "Tuition Discounts by Athletic Spending Group", x = "Athletic Spending Group", y = "discounts to tuition") +
+  theme_minimal()
+
+ggplot(three_groups_df, aes(x = total_ops_group, y = gifts, fill = total_ops_group)) +
+  geom_violin(trim = FALSE) +
+  geom_boxplot(width = 0.2, fill = "white") +
+  labs(title = "Gifts by Athletic Spending Group", x = "Athletic Spending Group", y = "gifts") +
+  theme_minimal()
+
+ggplot(three_groups_df, aes(x = total_ops_group, y = research_expenditure, fill = total_ops_group)) +
+  geom_violin(trim = FALSE) +
+  geom_boxplot(width = 0.2, fill = "white") +
+  labs(title = "Research Expenditure by Athletic Spending Group", x = "Athletic Spending Group", y = "Research Expenditure") +
+  theme_minimal()
+
+ggplot(three_groups_df, aes(x = total_ops_group, y = graduation_rate, fill = total_ops_group)) +
+  geom_violin(trim = FALSE) +
+  geom_boxplot(width = 0.2, fill = "white") +
+  labs(title = "Graduation Rate by Athletic Spending Group", x = "Athletic Spending Group", y = "Graduation Rate") +
+  theme_minimal()
+
+```
+
+```{r}
+head(two_groups_df, 5)
+```
+
+```{r}
+# Calculate group means
+group_means <- two_groups_df %>%
   group_by(total_ops_group) %>%
-  summarise(
-    discounts_to_tuition = mean(discounts_to_tuition, na.rm = TRUE),
-    gifts = mean(gifts, na.rm = TRUE),
-    graduation_rate = mean(graduation_rate, na.rm = TRUE),
-    research_expenditure = mean(research_expenditure, na.rm = TRUE)
-  ) %>%
-  pivot_longer(
-    cols = c(discounts_to_tuition, gifts, graduation_rate, research_expenditure),
-    names_to = "Benefit",
-    values_to = "MeanValue"
-  )
+  summarize(across(c(discounts_to_tuition, gifts, graduation_rate, research_expenditure), mean, na.rm = TRUE))
 
-# Create bar plot
-ggplot(summary_df, aes(x = Benefit, y = MeanValue, fill = total_ops_group)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 0.8)) +
-  labs(
-    title = "Comparison of Higher Education Benefits Across Spending Groups",
-    x = "Higher Education Benefits",
-    y = "Mean Value",
-    fill = "Spending Group"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# Barplot for means: Discounts to Tuition
+ggplot(group_means, aes(x = total_ops_group, y = discounts_to_tuition, fill = total_ops_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Discounts to Tuition by Athletic Spending Group (Two Groups)", 
+       x = "Spending Group", 
+       y = "Mean Discounts to Tuition") +
+  theme_minimal()
+
+# Barplot for means: Gifts
+ggplot(group_means, aes(x = total_ops_group, y = gifts, fill = total_ops_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Gifts by Athletic Spending Group (Two Groups)", 
+       x = "Spending Group", 
+       y = "Mean Gifts") +
+  theme_minimal()
+
+# Barplot for means: Research Expenditure
+ggplot(group_means, aes(x = total_ops_group, y = research_expenditure, fill = total_ops_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Research Expenditure by Athletic Spending Group (Two Groups)", 
+       x = "Spending Group", 
+       y = "Mean Research Expenditure") +
+  theme_minimal()
+
+# Barplot for means: Graduation Rate
+ggplot(group_means, aes(x = total_ops_group, y = graduation_rate, fill = total_ops_group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Graduation Rate by Athletic Spending Group (Two Groups)", 
+       x = "Spending Group", 
+       y = "Mean Graduation Rate") +
+  theme_minimal()
 
 ```
-## Which Schools has the most spending? Which schools has the most athletic spending
+
+
+## Which Schools has the most spending? Which schools has the least athletic spending? 
 ```{r}
 # Select top 20 schools by total expenditure
 top_schools <- means_df %>%
-  arrange(desc(total_expenditure)) %>%
+  arrange(desc(total_ops)) %>%
   slice_head(n = 20)
-# Ensure the school names are ranked by total expenditure
+
+# Set the order of `school_name` based on the ranking of total expenditure
 top_schools <- top_schools %>%
-  mutate(school_name.x = factor(school_name, levels = school_name[order(desc(total_expenditure))]))
+  mutate(school_name = factor(school_name, levels = school_name[order(desc(total_ops))]))
 
-# Barplot for top 20 schools expenditures
-ggplot(top_schools, aes(x = reorder(school_name, total_expenditure), y = total_expenditure)) +
-  geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8) +
-  coord_flip() +  
-  labs(title = "Total Expenditure top 20 Schools",
-       x = "School Name",
-       y = "Total Expenditure",
-       caption = "Data: Means across 2018-2022") 
+# Ensure the school names are ranked by total_ops
+top_schools <- top_schools %>%
+  mutate(school_name.x = factor(school_name, levels = school_name[order(desc(total_ops))]))
 
-```
-The plot ranks the top 20 schools based on their average total expenditure from 2018–2022. University Of Michigan - Ann Arbor, Pennsylvania State University - Main Campus, University of Arkansas, lead in mean expenditures in the recent 5 years, showcasing their substantial investment in facilities, programs, and operations. This suggests that these institutions likely have larger budgets and priorities for resource allocation compared to others in the group.
-
-```{r}
-# Barplot for top 20 schools by total_ops
+# Barplot for top 20 schools expenditures (normalized per student)
 ggplot(top_schools, aes(x = reorder(school_name, total_ops), y = total_ops)) +
   geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8) +
-  coord_flip() +
-  labs(
-    title = "Total Ops (Athletic Spending) for Top 20 Schools",
-    x = "School Name",
-    y = "Total Ops",
-    caption = "Data: Means across 2018–2022"
-  ) +
+  coord_flip() +  
+  labs(title = "Sports Expenditure Top 20 schools",
+       x = "School Name",
+       y = "Sports Expenditure Per Student (USD)",
+       caption = "Data: Means across 2018–2022 (Normalized Per Student)") +
+  theme_minimal()
+
+```
+
+```{r}
+# Select bottom 20 schools by total expenditure
+least_spendy_schools <- means_df %>%
+  arrange(total_ops) %>%  # Arrange in ascending order
+  slice_head(n = 20)  # Select the first 20 rows
+
+# Ensure the school names are ranked by total expenditure (descending order)
+least_spendy_schools <- least_spendy_schools %>%
+  mutate(school_name.x = factor(school_name, levels = school_name[order(desc(total_ops))]))
+
+# Barplot for 20 least spendy schools expenditures
+ggplot(least_spendy_schools, aes(x = reorder(school_name.x, -total_ops), y = total_ops)) +
+  geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8) +
+  coord_flip() +  # Flip the coordinates for a horizontal bar chart
+  labs(title = "Sports Expenditure 20 Least Spendy Schools",
+       x = "School Name",
+       y = "Sports Expenditure Per Student (USD)",
+       caption = "Data: Means across 2018–2022 (Normalized Per Student)") +
   theme_minimal()
 ```
-Both plots highlight many of the same schools at the top, including University Of Michigan - Ann Arbor, Pennsylvania State University - Main Campus, University of Arkansas, reflecting their leadership in both overall spending and athletic operations.This comparison shows that schools with high overall expenditures often allocate significant resources to athletics, reinforcing the importance of sports in their institutional strategies.
 
-- Total expenditure includes all institutional spending, which covers a broader range of activities beyond athletics, such as academics, research, and infrastructure. As a result, the bars in the first plot represent larger values overall.
-- Total operations (athletic spending) focuses exclusively on athletics-related activities, so while many schools appear in both plots, the rankings differ slightly. For example, schools like the University of Oregon and Auburn University rank slightly lower in total operations compared to their positions in total expenditure.
-
-## Besides Athletics, where did the top 20 most spendy schools spend their money on? 
 ```{r}
-# Plot for discounts_to_tuition
-plot_discounts <- ggplot(top_schools, aes(x = school_name, y = discounts_to_tuition)) +
+ggplot(least_spendy_schools, aes(x = school_name, y = discounts_to_tuition)) +
   geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8) +
+  coord_flip() +  
+  labs(
+    title = "Tuition Discounts for Bottom 20 Schools",
+    x = "School Name",
+    y = "Tuition Discounts",
+    caption = "Data: Means across 2018-2022"
+  ) +
+  theme_minimal()
+
+ggplot(least_spendy_schools, aes(x = school_name, y = gifts)) +
+  geom_bar(stat = "identity", fill = "orange", alpha = 0.8) +
   coord_flip() +
-  labs(title = "Discounts to Tuition for Top 20 Schools",
+  labs(title = "Gifts for Bottom 20 Schools",
        x = "School Name",
-       y = "Discounts to Tuition",
+       y = "Gifts",
        caption = "Data: Means across 2018-2022")
-plot_discounts
+
+ggplot(least_spendy_schools, aes(x = school_name, y = research_expenditure)) +
+  geom_bar(stat = "identity", fill = "darkgreen", alpha = 0.8) +
+  coord_flip() +
+  labs(title = "Research Expenditure for Bottom 20 Schools",
+       x = "School Name",
+       y = "Research Expenditure",
+       caption = "Data: Means across 2018-2022")
+
+
+ggplot(least_spendy_schools, aes(x = school_name, y = graduation_rate)) +
+  geom_bar(stat = "identity", fill = "purple", alpha = 0.8) +
+  coord_flip() +
+  labs(title = "Graduation Rate for Bottom 20 Schools",
+       x = "School Name",
+       y = "Graduation Rate",
+       caption = "Data: Means across 2018-2022")
+
 ```
-This plot highlights the average discounts provided on tuition by the top 20 most spendy schools. Schools such as the University of Michigan-Ann Arbor and The University of Massachusetts-Amherst show significant tuition discounts, possibly indicating financial aid availability or tuition waivers. On the other hand, schools with smaller bar values might offer fewer discounts or rely more on other financial structures.
 
 ```{r}
-# Plot for gifts
-plot_gifts <- ggplot(top_schools, aes(x = school_name, y = gifts)) +
+ggplot(top_schools, aes(x = school_name, y = discounts_to_tuition)) +
+  geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8) +
+  coord_flip() +  
+  labs(
+    title = "Tuition Discounts Top 20 Schools",
+    x = "School Name",
+    y = "Tuition Discounts Per Student (USD)",
+    caption = "Data: Means across 2018-2022"
+  ) +
+  theme_minimal()
+
+ggplot(top_schools, aes(x = school_name, y = gifts)) +
   geom_bar(stat = "identity", fill = "orange", alpha = 0.8) +
   coord_flip() +
   labs(title = "Gifts for Top 20 Schools",
        x = "School Name",
-       y = "Gifts",
+       y = "Gifts Per Student (USD)",
        caption = "Data: Means across 2018-2022")
-plot_gifts
-```
-This plot visualizes the gifts received by the top 20 schools during the same period. Some institutions, such as University of Wisconsin-Madison, University of Michigan - Ann Arbor and UCLA, stand out for receiving large amounts of gifts, reflecting strong alumni networks or external donor support. Lower values for other institutions could indicate less reliance on gifts or smaller donor bases.
 
-```{r}
-# Plot for research_expenditure
-plot_research <- ggplot(top_schools, aes(x = school_name, y = research_expenditure)) +
+ggplot(top_schools, aes(x = school_name, y = research_expenditure)) +
   geom_bar(stat = "identity", fill = "darkgreen", alpha = 0.8) +
   coord_flip() +
   labs(title = "Research Expenditure for Top 20 Schools",
        x = "School Name",
-       y = "Research Expenditure",
+       y = "Research Expenditure Per Student (USD)",
        caption = "Data: Means across 2018-2022")
-plot_research
-```
-The research expenditure plot shows how much the top 20 most spendy schools invest in research activities. Schools like the University of Michigan-Ann Arbor and UCLA, Georgia Tech have high research expenditure, emphasizing their roles as research-intensive institutions. In contrast, schools with smaller values may prioritize other areas over research or have different funding models.
 
-```{r}
-# Plot for graduation_rate
-plot_graduation <- ggplot(top_schools, aes(x = school_name, y = graduation_rate)) +
+
+ggplot(top_schools, aes(x = school_name, y = graduation_rate)) +
   geom_bar(stat = "identity", fill = "purple", alpha = 0.8) +
   coord_flip() +
-  labs(title = "Graduation Rate for Top 20 Schools",
+  labs(title = "Graduation Numbers for Top 20 Schools",
        x = "School Name",
-       y = "Graduation Rate",
-       caption = "Data: Means across 2018-2022") 
-plot_graduation
+       y = "Normalized Number of Graduates",
+       caption = "Data: Means across 2018-2022")
+
 ```
-This plot depicts the graduation rates of the top 20 schools. Some schools, such as the University of Arkansas and the The University of Maryland- College Park, demonstrate particularly high graduation rates, which might reflect their academic support systems and student success initiatives. Schools with lower rates may face challenges related to retention or completion.
+
 
 
 ```{r}
@@ -284,102 +536,22 @@ ggplot(correlation_long, aes(x = Var1, y = Var2, fill = value)) +
 
 
 ```
-** POSITIVE CORRELATIONS **
-total_ops (athletic spending) is strongly positively correlated with gifts (0.67), research_expenditure (0.65), and discounts_to_tuition (0.63), suggesting that higher athletic spending may attract more donations, support academic research, and provide more tuition discounts.
 
-gifts also shows a strong positive correlation with research_expenditure (0.82), indicating that donations may directly contribute to research investments.
-
-
-** NEGATIVE CORRELATIONS **
-graduation_rate has weak or negative correlations with most variables, including total_ops (-0.17) and gifts (-0.16), indicating that athletic spending and donations have little to no direct impact on improving graduation outcomes.
-
-
-** DETAILED INTERPRETATIONS **
-- Strong Positive Correlation Between total_ops and gifts (0.67):
-
-Schools with higher athletic operational spending (total_ops) tend to receive more gifts or donations.The strong correlation between total_ops and gifts highlights athletics' role in attracting donations. Schools could leverage this by increasing visibility or engagement through athletics to boost fundraising efforts.
-
-- Moderate Positive Correlation Between total_ops and research_expenditure (0.65):
-
-Higher athletic spending is associated with greater research expenditures. This could indicate a general trend where schools that spend more on athletics also allocate more resources toward research, reflecting larger institutional budgets.
-
-- Moderate Positive Correlation Between total_ops and discounts_to_tuition (0.63):
-
-Schools with higher athletic operational spending also tend to provide more tuition discounts or scholarships.
-This might reflect institutions using athletics-generated revenues to support student financial aid or related benefits. The moderate correlation between total_ops and discounts_to_tuition suggests that athletics may indirectly contribute to student financial aid, either through revenue generation or donor funding.
-
-
-Low to Negative Correlation Between graduation_rate and Other Variables:
-
-- graduation_rate shows weak to negative correlations with total_ops (-0.17), gifts (-0.16), and research_expenditure (-0.1).
-This indicates that athletic spending and related benefits (like gifts or research funding) are not directly linked to better graduation rates. Graduation rates are likely influenced by other factors unrelated to athletics.
-
-
-Strong Positive Correlation Between gifts and research_expenditure (0.82):
-
-- Schools receiving more gifts also tend to spend more on research, suggesting a potential link between donor generosity and institutional research priorities. The positive relationships between total_ops, research_expenditure, and gifts suggest that schools investing heavily in athletics are likely to be larger institutions with robust overall budgets.
-
-
-Moderate Positive Correlation Between discounts_to_tuition and Other Variables:
-
-- discounts_to_tuition correlates moderately with gifts (0.54) and research_expenditure (0.57), suggesting that schools offering tuition discounts may also attract donor gifts or allocate more to research.
-
-
-## Scatterplot between 2 independent variables due to their high correlations stated in the correlation matrix
-```{r}
-# total_ops (athletic spending) & gifts -> 0.67
-ggplot(means_df, aes(x = total_ops, y = gifts)) +
-  geom_point(color = "darkblue", alpha = 0.6, size = 3) +
-  geom_smooth(method = "lm", color = "red", se = FALSE) +
-  labs(title = "Relationship Between Total Ops and Gifts",
-       x = "Total Ops (Athletic Spending)",
-       y = "Gifts (Donations)",
-       caption = "Data: Means across 2018-2022") +
-  theme_minimal(base_size = 12)
-```
-This scatter plot shows a positive correlation between total athletic spending ("Total Ops") and the amount of donations ("Gifts") received, as represented by the upward trend of the regression line. This suggests that schools investing more in athletics may attract higher donations, potentially due to greater visibility or success in athletic programs.
-
-```{r}
-# gifts & research_expenditure -> 0.82
-ggplot(means_df, aes(x = gifts, y = research_expenditure)) +
-  geom_point(color = "darkgreen", alpha = 0.6, size = 3) +
-  geom_smooth(method = "lm", color = "blue", se = FALSE) +
-  labs(title = "Relationship Between Gifts and Research Expenditure",
-       x = "Gifts (Donations)",
-       y = "Research Expenditure",
-       caption = "Data: Means across 2018-2022") +
-  theme_minimal(base_size = 12)
-
-```
-The scatter plot displays a strong positive correlation between gifts (donations) and research expenditure, with higher donations associated with greater spending on research. This implies that institutions with strong donor support are likely to channel significant resources into research activities, highlighting a link between external funding and academic investment.
-
-```{r}
-# total_ops & graduation_rate -> -0.17
-ggplot(means_df, aes(x = total_ops, y = graduation_rate)) +
-  geom_point(color = "darkred", alpha = 0.6, size = 3) +
-  geom_smooth(method = "lm", color = "blue", se = FALSE) +
-  labs(title = "Relationship Between Total Ops and Graduation Rate",
-       x = "Total Ops (Athletic Spending)",
-       y = "Graduation Rate",
-       caption = "Data: Means across 2018-2022") +
-  theme_minimal(base_size = 12)
-```
-This scatter plot shows a slight negative trend between athletic spending ("Total Ops") and graduation rates, as indicated by the downward regression line. This suggests that higher athletic spending does not necessarily correlate with improved student graduation outcomes and might reflect differing institutional priorities.Increased investments in athletics may not directly translate to better academic performance or retention outcomes for students.
 
 ## Correlation between each dependent variable & all indp. variables
 ```{r}
 # Independent Variables vs discounts_to_tuition
 selected_data <- means_df %>%
-  select(coach_comp_third, support_comp, coach_comp, guarantees, total_ops, aid, severance, recruiting, 
+  select(coach_comp_third, support_comp, coach_comp, guarantees, severance, recruiting, 
          team_travel, equip, game_expenses, marketing, camps, spirits, facilities, overhead, 
          indirect_institutional, medical, membership, meals, otherops, bowl_expenses, prof_def, 
-         bowl_coachcomp, total_expenditure, discounts_to_tuition)
+         bowl_coachcomp, discounts_to_tuition)
 
 # Compute correlation matrix
 correlation_matrix <- cor(selected_data, use = "complete.obs")
 
 # Subset correlations for discounts_to_tuition
-correlation_subset <- correlation_matrix[1:25, "discounts_to_tuition", drop = FALSE]
+correlation_subset <- correlation_matrix[1:22, "discounts_to_tuition", drop = FALSE]
 
 # Convert to long format
 correlation_long <- as.data.frame(correlation_subset) %>%
@@ -398,21 +570,20 @@ ggplot(correlation_long, aes(x = reorder(Independent_Variable, -Correlation),
   theme_minimal(base_size = 12) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-This heatmap shows the correlation between various independent variables and discounts to tuition. Variables like aid, support compensation, total expenditure, team travel, coach compensation, and total operations have stronger correlations (closer to 0.6) with tuition discounts. These relationships suggest that higher spending in these areas may be associated with schools providing more financial aid or tuition discounts. 
 
 ```{r}
 # Independent Variables vs gifts
 selected_data <- means_df %>%
-  select(coach_comp_third, support_comp, coach_comp, guarantees, total_ops, aid, severance, recruiting, 
+  select(coach_comp_third, support_comp, coach_comp, guarantees, aid, severance, recruiting, 
          team_travel, equip, game_expenses, marketing, camps, spirits, facilities, overhead, 
          indirect_institutional, medical, membership, meals, otherops, bowl_expenses, prof_def, 
-         bowl_coachcomp, total_expenditure, gifts)
+         bowl_coachcomp, gifts)
 
 # Compute correlation matrix
 correlation_matrix <- cor(selected_data, use = "complete.obs")
 
 # Subset correlations for gifts
-correlation_subset <- correlation_matrix[1:25, "gifts", drop = FALSE]
+correlation_subset <- correlation_matrix[1:23, "gifts", drop = FALSE]
 
 # Convert to long format
 correlation_long <- as.data.frame(correlation_subset) %>%
@@ -432,22 +603,21 @@ ggplot(correlation_long, aes(x = reorder(Independent_Variable, -Correlation),
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
-The heatmap illustrates correlations between independent variables and the total gifts received. Higher correlations (near 0.6) are observed with variables such as support compensation, total expenditure, and team travel, implying that schools investing more in operations and athletic-related activities tend to attract more gifts & donations from alumni or external donors.
 
 
 ```{r}
 # Independent Variables vs research_expenditure
 selected_data <- means_df %>%
-  select(coach_comp_third, support_comp, coach_comp, guarantees, total_ops, aid, severance, recruiting, 
+  select(coach_comp_third, support_comp, coach_comp, guarantees, aid, severance, recruiting, 
          team_travel, equip, game_expenses, marketing, camps, spirits, facilities, overhead, 
          indirect_institutional, medical, membership, meals, otherops, bowl_expenses, prof_def, 
-         bowl_coachcomp, total_expenditure, research_expenditure)
+         bowl_coachcomp, research_expenditure)
 
 # Compute correlation matrix
 correlation_matrix <- cor(selected_data, use = "complete.obs")
 
 # Subset correlations for research_expenditure
-correlation_subset <- correlation_matrix[1:25, "research_expenditure", drop = FALSE]
+correlation_subset <- correlation_matrix[1:23, "research_expenditure", drop = FALSE]
 
 # Convert to long format
 correlation_long <- as.data.frame(correlation_subset) %>%
@@ -467,22 +637,21 @@ ggplot(correlation_long, aes(x = reorder(Independent_Variable, -Correlation),
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
-This plot highlights correlations between independent variables and research expenditure. Significant positive correlations are observed with variables like total expenditure and team travel, indicating that schools prioritizing operational and travel-related budgets may also have higher research spending, possibly reflecting their resource-intensive research environments.
 
 
 ```{r}
 # Independent Variables vs graduation_rate
 selected_data <- means_df %>%
-  select(coach_comp_third, support_comp, coach_comp, guarantees, total_ops, aid, severance, recruiting, 
+  select(coach_comp_third, support_comp, coach_comp, guarantees, aid, severance, recruiting, 
          team_travel, equip, game_expenses, marketing, camps, spirits, facilities, overhead, 
          indirect_institutional, medical, membership, meals, otherops, bowl_expenses, prof_def, 
-         bowl_coachcomp, total_expenditure, graduation_rate)
+         bowl_coachcomp, graduation_rate)
 
 # Compute correlation matrix
 correlation_matrix <- cor(selected_data, use = "complete.obs")
 
 # Subset correlations for graduation_rate
-correlation_subset <- correlation_matrix[1:25, "graduation_rate", drop = FALSE]
+correlation_subset <- correlation_matrix[1:23, "graduation_rate", drop = FALSE]
 
 # Convert to long format
 correlation_long <- as.data.frame(correlation_subset) %>%
@@ -502,55 +671,27 @@ ggplot(correlation_long, aes(x = reorder(Independent_Variable, -Correlation),
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
-
-The heatmap shows that most independent variables have weak or negative correlations with graduation rates. Variables like overhead and game expenses even show a slight negative correlation, suggesting that spending in these areas might not significantly improve or could even slightly hinder graduation outcomes. Conversely, some variables like membership have a minimal positive correlation, though their impact appears marginal.
-
-## EDA Conclusion
-The findings from the above analyses suggest that athletic spending in higher education has both tangible and intangible impacts, while it appears to have financial benefits, its academic benefits are nuanced. Athletic spending shows a positive relationship with increased donations (gifts) and tuition discounts, indicating that investments in athletics can enhance alumni and donor engagement as well as financial accessibility for students. Similarly, institutions with higher athletic budgets often benefit from external financial support and gifts, which could be channeled toward broader institutional goals like research and development. However, the weak or negative correlation between athletic spending and graduation rates suggests that such expenditures do not directly translate to improved academic outcomes or student success. Additionally, the strong correlation between athletic spending and research expenditures highlights the possibility that robust financial ecosystems, supported by athletics, can indirectly foster academic investments. Overall, while athletic spending brings financial and reputational benefits to institutions, its impact on core educational metrics like graduation rates appears limited, suggesting that its primary benefits lie in institutional branding, donor engagement, and adjunct resource generation.
-
-# Multi-Linear Regression: Predicting 
-- 4 dependent variables: 
-  - discounts_to_tuition (scholarships/tuition discounts)
-  - gifts (donor contributions)
-  - research_expenditure (research spending)
-  - graduation_rate (student success)
-- predictors: 
-  - We want to focus mainly on independent variables that show moderate to strong correlations with each dependent variable to include as predictors, avoid using independent variables with near-zero correlations or those that exhibit multicollinearity.
   
-## Does operational spending (total_ops, support_comp, team_travel, and marketing) significantly affect tuition discounts?
-H0: None of the predictors (total_ops, support_comp, team_travel, marketing) have a significant effect on tuition discounts. (All coefficients = 0)
-H1: At least one of the predictors has a significant effect on tuition discounts. (At least one coefficient ≠ 0)
+## Which specific indp. variable correlate to benefits? 
+
 ```{r}
 # Predicting discounts_to_tuition
-m_discounts_to_tuition <- lm(discounts_to_tuition ~ aid + team_travel + support_comp + total_ops + coach_comp, data = means_df)
+m_discounts_to_tuition <- lm(discounts_to_tuition ~ team_travel + support_comp + coach_comp + recruiting + equip + meals + facilities + overhead + guarantees, data = means_df)
 summary(m_discounts_to_tuition)
 ```
 
 ```{r}
-# Add interaction terms
-# 1. aid * support_comp
-# 2. total_ops * team travel
-m_discounts_to_tuition_interaction <- lm(
-  discounts_to_tuition ~ aid * support_comp + total_ops * team_travel, 
-  data = means_df)
-summary(m_discounts_to_tuition_interaction)
-```
-The interaction term aid:support_comp is highly significant (p-value = 0.000508), indicating that the combined effect of these two variables significantly influences discounts_to_tuition.
-
-The interaction term total_ops:team_travel is also significant (p-value = 0.007079), suggesting that the relationship between total operational expenses and team travel impacts tuition discounts.
-
-```{r}
 # Predicting gifts
-model_gifts <- lm(gifts ~ total_ops + support_comp + meals + coach_comp + team_travel + overhead, data = means_df)
+model_gifts <- lm(gifts ~ support_comp + meals + coach_comp + team_travel + overhead + equip + medical + aid + recruiting, data = means_df)
 summary(model_gifts)
 ```
-The variable support_comp (Support Staff Compensation) is statistically significant (p < 0.001) and positively associated with gifts. This indicates that higher support staff compensation correlates with increased gifts.
-
-meals is significant (p < 0.05) and also positively related to gifts, suggesting that spending on meals positively impacts gifts received.
+```{r}
+summary(means_df$gifts, na.rm = TRUE)
+```
 
 ```{r}
 # Predicting research_expenditure
-model_research_expenditure <- lm(research_expenditure ~ total_ops + support_comp + coach_comp + team_travel + marketing, data = means_df)
+model_research_expenditure <- lm(research_expenditure ~ support_comp + coach_comp + team_travel + overhead + aid + meals, data = means_df)
 summary(model_research_expenditure)
 ```
 
@@ -558,28 +699,4 @@ summary(model_research_expenditure)
 # Predicting graduation_rate
 model_graduation_rate <- lm(graduation_rate ~ spirits + aid + medical + team_travel + recruiting, data = means_df)
 summary(model_graduation_rate)
-```
-
-```{r}
-# Does total athletic spending lead to discounts to tuition? 
-m_single_discounts_to_tuition <- lm(discounts_to_tuition ~ total_ops, data = means_df)
-summary(m_single_discounts_to_tuition)
-```
-
-```{r}
-# Does total athletic spending lead to more gifts from donors? 
-m_single_gifts <- lm(gifts ~ total_ops, data = means_df)
-summary(m_single_gifts)
-```
-
-```{r}
-# Does total athletic spending lead to more R&D expenses? 
-m_single_research <- lm(research_expenditure ~ total_ops, data = means_df)
-summary(m_single_research)
-```
-
-```{r}
-# Does total athletic spending lead to higher graduation rate? 
-m_single_grad <- lm(graduation_rate ~ total_ops, data = means_df)
-summary(m_single_grad)
 ```
