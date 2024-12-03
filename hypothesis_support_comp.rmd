@@ -82,7 +82,7 @@ two_groups_df <- means_df %>%
 two_groups_df <- two_groups_df %>%
   mutate(support_comp_group = cut(
     support_comp,
-    breaks = quantile(coach_comp, probs = seq(0, 1, 0.5), na.rm = TRUE),
+    breaks = quantile(support_comp, probs = seq(0, 1, 0.5), na.rm = TRUE),
     labels = c("Low", "High"),
     include.lowest = TRUE
   ))
