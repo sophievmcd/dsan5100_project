@@ -130,6 +130,8 @@ run_multiple_t_tests <- function(data, dependent_vars, grouping_var, var_equal =
   # Initialize a results data frame
   results <- data.frame(
     Dependent_Variable = character(),
+    Group_1 = character(),
+    Group_2 = character(),
     t_statistic = numeric(),
     df = numeric(),
     p_value = numeric(),
@@ -138,6 +140,10 @@ run_multiple_t_tests <- function(data, dependent_vars, grouping_var, var_equal =
     stringsAsFactors = FALSE
   )
   
+  # Get all pairwise combinations of group levels
+  group_levels <- levels(data[[grouping_var]])
+  group_combinations <- combn(group_levels, 2, simplify = TRUE)
+  
   for (dep_var in dependent_vars) {
     # Check if the dependent variable exists
     if (!dep_var %in% names(data)) {
@@ -145,35 +151,47 @@ run_multiple_t_tests <- function(data, dependent_vars, grouping_var, var_equal =
       next
     }
     
-    # Perform t-test
-    t_test <- tryCatch({
-      t.test(data[[dep_var]] ~ data[[grouping_var]], data = data, var.equal = var_equal)
-    }, error = function(e) {
-      warning(paste("Error in t-test for", dep_var, ":", e$message))
-      return(NULL)
-    })
-    
-    # Skip if the t-test failed
-    if (is.null(t_test)) next
-    
-    # Extract results
-    group_levels <- levels(data[[grouping_var]])
-    group_means <- tapply(data[[dep_var]], data[[grouping_var]], mean, na.rm = TRUE)
-    results <- results %>% add_row(
-      Dependent_Variable = dep_var,
-      t_statistic = t_test$statistic,
-      df = t_test$parameter,
-      p_value = t_test$p.value,
-      mean_group_1 = group_means[group_levels[1]],
-      mean_group_2 = group_means[group_levels[2]]
-    )
+    for (i in 1:ncol(group_combinations)) {
+      # Get the current pair of groups
+      group_1 <- group_combinations[1, i]
+      group_2 <- group_combinations[2, i]
+      
+      # Subset the data for the two groups
+      subset_data <- data[data[[grouping_var]] %in% c(group_1, group_2), ]
+      
+      # Perform t-test
+      t_test <- tryCatch({
+        t.test(subset_data[[dep_var]] ~ subset_data[[grouping_var]], var.equal = var_equal)
+      }, error = function(e) {
+        warning(paste("Error in t-test for", dep_var, "between", group_1, "and", group_2, ":", e$message))
+        return(NULL)
+      })
+      
+      # Skip if the t-test failed
+      if (is.null(t_test)) next
+      
+      # Extract group means
+      group_means <- tapply(subset_data[[dep_var]], subset_data[[grouping_var]], mean, na.rm = TRUE)
+      
+      # Add results to the data frame
+      results <- results %>% add_row(
+        Dependent_Variable = dep_var,
+        Group_1 = group_1,
+        Group_2 = group_2,
+        t_statistic = t_test$statistic,
+        df = t_test$parameter,
+        p_value = t_test$p.value,
+        mean_group_1 = group_means[group_1],
+        mean_group_2 = group_means[group_2]
+      )
+    }
   }
   
   # Format results in a pretty table
   results %>%
     mutate(across(where(is.numeric), ~ round(., 4))) %>%
     kable(format = "markdown", col.names = c(
-      "Dependent Variable", "t-Statistic", "Degrees of Freedom", "p-Value",
+      "Dependent Variable", "Group 1", "Group 2", "t-Statistic", "Degrees of Freedom", "p-Value",
       "Mean (Group 1)", "Mean (Group 2)"
     ))
 }
@@ -253,6 +271,12 @@ investigate_assumptions(three_groups_df, dependent_vars, independent_var)
 ```{r}
 
 run_multiple_t_tests(two_groups_subset, dependent_vars, independent_var)
+
+```
+
+```{r}
+
+run_multiple_t_tests(three_groups_subset, dependent_vars, independent_var)
 
 ```
 
